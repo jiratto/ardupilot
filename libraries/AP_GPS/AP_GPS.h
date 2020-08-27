@@ -61,6 +61,7 @@ class AP_GPS
     friend class AP_GPS_SBP2;
     friend class AP_GPS_SIRF;
     friend class AP_GPS_UBLOX;
+    friend class AP_GPS_NMEA_EXT;
     friend class AP_GPS_Backend;
 
 public:
@@ -92,6 +93,7 @@ public:
         GPS_TYPE_MAV = 14,
         GPS_TYPE_NOVA = 15,
         GPS_TYPE_HEMI = 16, // hemisphere NMEA
+        GPS_TYPE_NMEA_EXT = 17,
     };
 
     /// GPS status codes

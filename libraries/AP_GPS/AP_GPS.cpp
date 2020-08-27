@@ -35,6 +35,7 @@
 #include "AP_GPS_SIRF.h"
 #include "AP_GPS_UBLOX.h"
 #include "AP_GPS_MAV.h"
+#include "AP_GPS_NMEA_EXT.h"
 #include "GPS_Backend.h"
 
 #if HAL_WITH_UAVCAN
@@ -588,6 +589,9 @@ void AP_GPS::detect_instance(uint8_t instance)
                     _type[instance] == GPS_TYPE_HEMI) &&
                    AP_GPS_NMEA::_detect(dstate->nmea_detect_state, data)) {
             new_gps = new AP_GPS_NMEA(*this, state[instance], _port[instance]);
+        } else if ((_type[instance] == GPS_TYPE_NMEA_EXT) &&
+                   AP_GPS_NMEA_EXT::_detect(dstate->nmea_detect_state, data)) {
+            new_gps = new AP_GPS_NMEA_EXT(*this, state[instance], _port[instance]);
         }
 #endif // HAL_BUILD_AP_PERIPH
         if (new_gps) {
