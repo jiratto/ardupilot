@@ -22,7 +22,7 @@
 //
 //
 
-/// @file	AP_GPS_NMEA_EXT_EXT.h
+/// @file	AP_GPS_NMEA_EXT.h
 /// @brief	NMEA protocol parser (Extension)
 ///
 /// This is a lightweight NMEA parser, derived originally from the
@@ -155,11 +155,3 @@ private:
 
     static const char _initialisation_blob[];
 };
-
-#define AP_GPS_NMEA_EXT_HEMISPHERE_INIT_STRING \
-        "$JATT,NMEAHE,0\r\n" /* Prefix of GP on the HDT message */      \
-        "$JASC,GPGGA,5\r\n" /* GGA at 5Hz */                            \
-        "$JASC,GPRMC,5\r\n" /* RMC at 5Hz */                            \
-        "$JASC,GPVTG,5\r\n" /* VTG at 5Hz */                            \
-        "$JASC,GPHDT,5\r\n" /* HDT at 5Hz */                            \
-        "$JMODE,SBASR,YES\r\n" /* Enable SBAS */
