@@ -293,6 +293,29 @@ void Rover::send_wheel_encoder_distance(const mavlink_channel_t chan)
     }
 }
 
+void Rover::send_weather_info(const mavlink_channel_t chan)
+{
+    mavlink_msg_weather_info_send(chan,
+                                  weather_info.heading_mag, 
+                                  weather_info.deviation_mag,
+                                  weather_info.variation_mag, 
+                                  weather_info.heading_north,
+                                  weather_info.wind_ang_bow, 
+                                  weather_info.wind_spd_rel,
+                                  weather_info.wind_spd_the, 
+                                  weather_info.pressure_bar,
+                                  weather_info.temp_celcius, 
+                                  weather_info.humid_rel,
+                                  weather_info.wind_ang_north, 
+                                  weather_info.wind_ang_mag,
+                                  weather_info.wind_spd_knot, 
+                                  weather_info.water_depth,
+                                  weather_info.water_temp, 
+                                  weather_info.water_speed,
+                                  weather_info.total_miles, 
+                                  weather_info.miles_since_reset);                                  
+}
+
 uint8_t GCS_MAVLINK_Rover::sysid_my_gcs() const
 {
     return rover.g.sysid_my_gcs;
@@ -330,6 +353,11 @@ bool GCS_MAVLINK_Rover::try_send_message(enum ap_message id)
     case MSG_WIND:
         CHECK_PAYLOAD_SIZE(WIND);
         rover.g2.windvane.send_wind(chan);
+        break;
+
+    case MSG_WEATHER_INFO:
+        CHECK_PAYLOAD_SIZE(WEATHER_INFO);
+        rover.send_weather_info(chan);
         break;
 
     case MSG_ADSB_VEHICLE: {

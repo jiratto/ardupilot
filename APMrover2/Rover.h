@@ -352,6 +352,7 @@ private:
     // GCS_Mavlink.cpp
     void send_servo_out(mavlink_channel_t chan);
     void send_wheel_encoder_distance(mavlink_channel_t chan);
+    void send_weather_info(mavlink_channel_t chan);
 
     // Log.cpp
     void Log_Write_Attitude();
@@ -392,7 +393,11 @@ private:
     void init_proximity();
     void read_airspeed();
     void rpm_update(void);
-
+    void update_weather();
+    
+    // Weather info class
+    AP_GPS::Weather_State weather_info;
+    
     // Steering.cpp
     void set_servos(void);
 

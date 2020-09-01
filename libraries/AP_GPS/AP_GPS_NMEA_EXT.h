@@ -53,7 +53,8 @@ class AP_GPS_NMEA_EXT : public AP_GPS_Backend
     friend class AP_GPS_NMEA_EXT_Test;
 
 public:
-
+    AP_GPS_NMEA_EXT(AP_GPS &_gps, AP_GPS::GPS_State &_state, AP_GPS::Weather_State &_weather, AP_HAL::UARTDriver *_port);
+    
     using AP_GPS_Backend::AP_GPS_Backend;
 
     /// Checks the serial receive buffer for characters,
@@ -72,6 +73,12 @@ private:
         _GPS_SENTENCE_GGA = 64,
         _GPS_SENTENCE_VTG = 96,
         _GPS_SENTENCE_HDT = 128,
+        _WIN_SENTENCE_MDA = 192,
+        _WIN_SENTENCE_MWV = 224,
+        _SON_SENTENCE_DPT = 256,
+        _SON_SENTENCE_MTW = 288,
+        _SON_SENTENCE_VHW = 320,
+        _SON_SENTENCE_VLW = 352,
         _GPS_SENTENCE_OTHER = 0
     };
 
@@ -117,7 +124,7 @@ private:
     uint8_t _parity;                                                    ///< NMEA message checksum accumulator
     bool _is_checksum_term;                                     ///< current term is the checksum
     char _term[15];                                                     ///< buffer for the current term within the current sentence
-    uint8_t _sentence_type;                                     ///< the sentence type currently being processed
+    uint16_t _sentence_type;                                    ///< the sentence type currently being processed
     uint8_t _term_number;                                       ///< term index within the current sentence
     uint8_t _term_offset;                                       ///< character offset with the term being received
     uint16_t _sentence_length;
@@ -141,7 +148,18 @@ private:
     uint32_t _last_RMC_ms = 0;
     uint32_t _last_GGA_ms = 0;
     uint32_t _last_VTG_ms = 0;
-    uint32_t _last_HDT_ms = 0;
+    uint32_t _last_HDT_ms = 0;  
+
+    // extension state
+    AP_GPS::Weather_State &weather;
+
+    // MWV Message
+    int32_t _wind_ang_bow;                                      ///< Wind angle relative to vessel bow/centerline
+    int32_t _wind_spd_rel;                                      ///< Apparent wind speed (like standing on a boat)
+    int32_t _wind_spd_the;                                      ///< Theoretical wind speed (calculated)
+    bool _the_selector = false;
+    bool _mwv_data_valid = false;
+    bool _new_weather_message = false;
 
     /// @name	Init strings
     ///			In ::init, an attempt is made to configure the GPS

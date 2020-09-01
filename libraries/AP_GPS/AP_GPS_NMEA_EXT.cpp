@@ -36,6 +36,8 @@
 
 #include "AP_GPS_NMEA_EXT.h"
 
+#include <GCS_MAVLink/GCS.h>
+
 extern const AP_HAL::HAL& hal;
 
 // optionally log all NMEA data for debug purposes
@@ -49,6 +51,14 @@ extern const AP_HAL::HAL& hal;
 //
 #define DIGIT_TO_VAL(_x)        (_x - '0')
 #define hexdigit(x) ((x)>9?'A'+((x)-10):'0'+(x))
+
+AP_GPS_NMEA_EXT::AP_GPS_NMEA_EXT(AP_GPS &_gps, 
+                                 AP_GPS::GPS_State &_state, 
+                                 AP_GPS::Weather_State &_weather, 
+                                 AP_HAL::UARTDriver *_port) : AP_GPS_Backend(_gps, _state, _port),
+    weather(_weather)
+{
+}
 
 bool AP_GPS_NMEA_EXT::read(void)
 {
@@ -193,6 +203,10 @@ uint32_t AP_GPS_NMEA_EXT::_parse_degrees()
  */
 bool AP_GPS_NMEA_EXT::_have_new_message()
 {
+    if (_new_weather_message) {
+        return true;
+    }
+
     if (_last_RMC_ms == 0 ||
         _last_GGA_ms == 0) {
         return false;
@@ -306,6 +320,60 @@ bool AP_GPS_NMEA_EXT::_term_complete()
                     state.status = AP_GPS::NO_FIX;
                 }
             }
+
+            // Check each weather message type and assign it's
+            switch (_sentence_type) {
+            case _WIN_SENTENCE_MWV:
+                if (_mwv_data_valid) {
+                    weather.wind_ang_bow = _wind_ang_bow;
+                    weather.wind_spd_rel = _wind_spd_rel;
+                    weather.wind_spd_the = _wind_spd_the;
+                    _mwv_data_valid = false;
+                    _new_weather_message = true;
+                }
+                break;
+            case _WIN_SENTENCE_MDA:
+                // if (_have_MDA_message) {
+                //     weather.pressure_bar = _pressure_bar;
+                //     weather.temp_celcius = _temp_celcius;
+                //     weather.humid_rel = _humid_rel;
+                //     weather.wind_ang_north = _wind_ang_north;
+                //     weather.wind_ang_mag = _wind_ang_mag;
+                //     weather.wind_spd_knot = _wind_spd_knot;
+                //     _have_MDA_message = false;
+                //     _new_weather_message = true;
+                // }
+                break;
+            case _SON_SENTENCE_DPT:
+                // if (_have_DPT_message) {
+                //     weather.water_depth = _water_depth;
+                //     _have_DPT_message = false;
+                //     _new_weather_message = true;
+                // }
+                break;
+            case _SON_SENTENCE_MTW:
+                // if (_have_MTW_message) {
+                //     weather.water_temp = _water_temp;
+                //     _have_MTW_message = false;
+                //     _new_weather_message = true;
+                // }
+                break;
+            case _SON_SENTENCE_VHW:
+                // if (_have_VHW_message) {
+                //     weather.water_speed = _water_speed;
+                //     _have_VHW_message = false;
+                //     _new_weather_message = true;
+                // }
+                break;
+            case _SON_SENTENCE_VLW:
+                // if(_have_VLW_message) {
+                //     weather.total_miles = _total_miles;
+                //     weather.miles_since_reset = _miles_since_reset;
+                //     _have_VLW_message = false;
+                //     _new_weather_message = true;
+                // }
+                break;
+            }
             // see if we got a good message
             return _have_new_message();
         }
@@ -339,6 +407,18 @@ bool AP_GPS_NMEA_EXT::_term_complete()
             // VTG may not contain a data qualifier, presume the solution is good
             // unless it tells us otherwise.
             _gps_data_good = true;
+        } else if (strcmp(term_type, "MDA") == 0) {
+            _sentence_type = _WIN_SENTENCE_MDA;
+        } else if (strcmp(term_type, "MWV") == 0) {
+            _sentence_type = _WIN_SENTENCE_MWV;
+        } else if (strcmp(term_type, "DPT") == 0) {
+            _sentence_type = _SON_SENTENCE_DPT;
+        } else if (strcmp(term_type, "MTW") == 0) {
+            _sentence_type = _SON_SENTENCE_MTW;
+        } else if (strcmp(term_type, "VHW") == 0) {
+            _sentence_type = _SON_SENTENCE_VHW;
+        } else if (strcmp(term_type, "VLW") == 0) {
+            _sentence_type = _SON_SENTENCE_VLW;
         } else {
             _sentence_type = _GPS_SENTENCE_OTHER;
         }
@@ -414,6 +494,32 @@ bool AP_GPS_NMEA_EXT::_term_complete()
         case _GPS_SENTENCE_VTG + 1: // Course (VTG)
             _new_course = _parse_decimal_100(_term);
             break;
+
+        // wind Message
+        // 
+        case _WIN_SENTENCE_MWV + 1: // Wind angle relative to vessel bow
+            _wind_ang_bow = _parse_decimal_100(_term);
+            break;
+        case _WIN_SENTENCE_MWV + 2: // Wind speed reference
+            if (_term[0] == 'T')
+                _the_selector = true;
+            else
+                _the_selector = false;
+            break;
+        case _WIN_SENTENCE_MWV + 3: // Wind speed
+            if (_the_selector) {
+                _wind_spd_the = _parse_decimal_100(_term);
+            } else {
+                _wind_spd_rel = _parse_decimal_100(_term);
+            }
+            break;
+        case _WIN_SENTENCE_MWV + 5: // Validitiy check
+            if (_term[0] == 'A')
+                _mwv_data_valid = true;
+            else
+                _mwv_data_valid = false;
+            break;
+
         }
     }
 

@@ -170,6 +170,33 @@ public:
         int32_t  rtk_iar_num_hypotheses;   ///< Current number of integer ambiguity hypotheses
     };
 
+    struct Weather_State {
+        uint8_t instance; // the instance number of this GPS
+        // HGD
+        int32_t heading_mag;
+        int32_t deviation_mag;
+        int32_t variation_mag;
+        // HDT
+        int32_t heading_north;
+        // MWV
+        int32_t wind_ang_bow;
+        int32_t wind_spd_rel;
+        int32_t wind_spd_the;
+        // MDA
+        int32_t pressure_bar;
+        int32_t temp_celcius;
+        int32_t humid_rel;
+        int32_t wind_ang_north;
+        int32_t wind_ang_mag;
+        int32_t wind_spd_knot;
+        // Underwater uSonic mesurement
+        int32_t water_depth;
+        int32_t water_temp;
+        int32_t water_speed;
+        int32_t total_miles;
+        int32_t miles_since_reset;
+    };
+
     /// Startup initialisation.
     void init(const AP_SerialManager& serial_manager);
 
@@ -378,6 +405,9 @@ public:
     // return a 3D vector defining the offset of the GPS antenna in meters relative to the body frame origin
     const Vector3f &get_antenna_offset(uint8_t instance) const;
 
+    // return weather state from extension device (Airmar 150wx)
+    Weather_State get_weather_state() const;
+    
     // set position for HIL
     void setHIL(uint8_t instance, GPS_Status status, uint64_t time_epoch_ms,
                 const Location &location, const Vector3f &velocity, uint8_t num_sats,
@@ -487,6 +517,7 @@ private:
     // Note allowance for an additional instance to contain blended data
     GPS_timing timing[GPS_MAX_INSTANCES];
     GPS_State state[GPS_MAX_INSTANCES];
+    Weather_State weather;
     AP_GPS_Backend *drivers[GPS_MAX_RECEIVERS];
     AP_HAL::UARTDriver *_port[GPS_MAX_RECEIVERS];
 

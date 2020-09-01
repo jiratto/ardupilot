@@ -338,6 +338,7 @@ void AP_GPS::init(const AP_SerialManager& serial_manager)
     // prep the state instance fields
     for (uint8_t i = 0; i < GPS_MAX_INSTANCES; i++) {
         state[i].instance = i;
+        //weather[i].instance = i;
     }
 
     // sanity check update rate
@@ -591,7 +592,7 @@ void AP_GPS::detect_instance(uint8_t instance)
             new_gps = new AP_GPS_NMEA(*this, state[instance], _port[instance]);
         } else if ((_type[instance] == GPS_TYPE_NMEA_EXT) &&
                    AP_GPS_NMEA_EXT::_detect(dstate->nmea_detect_state, data)) {
-            new_gps = new AP_GPS_NMEA_EXT(*this, state[instance], _port[instance]);
+            new_gps = new AP_GPS_NMEA_EXT(*this, state[instance], weather, _port[instance]);
         }
 #endif // HAL_BUILD_AP_PERIPH
         if (new_gps) {
@@ -1223,6 +1224,11 @@ const Vector3f &AP_GPS::get_antenna_offset(uint8_t instance) const
 #endif
 
     return _antenna_offset[instance];
+}
+
+AP_GPS::Weather_State AP_GPS::get_weather_state() const
+{
+    return weather;
 }
 
 /*
