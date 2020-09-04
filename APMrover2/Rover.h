@@ -94,6 +94,7 @@
 #include "GCS_Rover.h"
 #include "AP_Rally.h"
 #include "RC_Channel.h"                  // RC Channel Library
+#include "AP_AIS.h"
 
 class Rover : public AP_Vehicle {
 public:
@@ -394,10 +395,11 @@ private:
     void read_airspeed();
     void rpm_update(void);
     void update_weather();
-    void update_rcin();
-    
-    // Weather info class
+    void update_ais();
+
+    // rtnasv devices
     AP_GPS::Weather_State weather_info;
+    AP_AIS ais;
     
     // Steering.cpp
     void set_servos(void);

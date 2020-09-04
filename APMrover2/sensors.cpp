@@ -155,63 +155,7 @@ void Rover::update_weather()
     gcs().send_message(MSG_WEATHER_INFO);
 }
 
-#include <GCS_MAVLink/GCS.h>
-#define MAX_RCIN_CHANNELS 16
-
-static uint16_t last_rcin_value[MAX_RCIN_CHANNELS];
-static bool inited = false;
-
-void Rover::update_rcin()
+void Rover::update_ais()
 {
-    if (inited == false) {
-        BoardConfig.init();
-        for (uint8_t i = 0; i < 16; i++) {
-            hal.rcout->enable_ch(i);
-        }
-
-        hal.rcout->force_safety_off();
-        AP_Param::set_object_value(&BoardConfig, BoardConfig.var_info, "PWM_COUNT", 16);
-        AP_Param::set_object_value(&BoardConfig, BoardConfig.var_info, "SAFETYENABLE", DISABLE);
-        AP_Param::set_object_value(&BoardConfig, BoardConfig.var_info, "SAFETYOPTION", 0);// 0 1 2
-        AP_Param::set_object_value(&BoardConfig, BoardConfig.var_info, "SAFETY_MASK", 8191);
-
-        inited = true;
-    }
-
-    uint8_t nchannels = hal.rcin->num_channels();  // Get the numbers channels detected by RC_INPUT.
-    if (nchannels == 0) {
-        gcs().send_text(MAV_SEVERITY_WARNING, "No channels detected");
-        hal.console->printf("No channels detected\n");
-        return;
-    }
-
-    if (nchannels > MAX_RCIN_CHANNELS) {
-        nchannels = MAX_RCIN_CHANNELS;
-    }
-
-    bool changed[MAX_RCIN_CHANNELS];
-    for (uint8_t i = 0; i < nchannels; i++) {
-        changed[i] = false;
-    }
-
-    for (uint8_t i = 0; i < nchannels; i++) {
-        uint16_t v = hal.rcin->read(i);
-        hal.rcout->write(i, v);
-        if (last_rcin_value[i] != v) {
-            
-            changed[i] = true;
-            last_rcin_value[i] = v;
-        }
-    }
-
-    gcs().send_text(MAV_SEVERITY_INFO, "%04u %04u %04u %04u %04u %04u %04u %04u",
-        (unsigned)last_rcin_value[0],
-        (unsigned)last_rcin_value[1],
-        (unsigned)last_rcin_value[2],
-        (unsigned)last_rcin_value[3],
-        (unsigned)last_rcin_value[4],
-        (unsigned)last_rcin_value[5],
-        (unsigned)last_rcin_value[6],
-        (unsigned)last_rcin_value[7]);
+    ais.update();
 }
-
