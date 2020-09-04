@@ -155,10 +155,10 @@ void AP_KDECAN::init(uint8_t driver_index, bool enable_filters)
         _esc_present_bitmask |= (1 << (id.source_id - ESC_NODE_ID_FIRST));
         _esc_max_node_id = id.source_id - ESC_NODE_ID_FIRST + 1;
 
-        debug_can(2, "KDECAN: found ESC id %u\n\r", id.source_id);
+        //debug_can(2, "KDECAN: found ESC id %u\n\r", id.source_id);
     }
 
-    snprintf(_thread_name, sizeof(_thread_name), "kdecan_%u", driver_index);
+    //snprintf(_thread_name, sizeof(_thread_name), "kdecan_%u", driver_index);
 
     // start thread for receiving and sending CAN frames
     if (!hal.scheduler->thread_create(FUNCTOR_BIND_MEMBER(&AP_KDECAN::loop, void), _thread_name, 4096, AP_HAL::Scheduler::PRIORITY_CAN, 0)) {

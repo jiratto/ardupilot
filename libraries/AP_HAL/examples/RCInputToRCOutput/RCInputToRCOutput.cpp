@@ -40,6 +40,8 @@ void setup(void)
 
 void loop(void)
 {
+    hal.console->printf("loop\n");
+
     bool changed = false;
     uint8_t nchannels = hal.rcin->num_channels();
 

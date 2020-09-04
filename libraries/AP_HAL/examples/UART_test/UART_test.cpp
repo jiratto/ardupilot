@@ -32,7 +32,9 @@ void setup(void)
       start all UARTs at 57600 with default buffer sizes
     */
 
-    hal.scheduler->delay(1000); //Ensure that the uartA can be initialized
+    hal.scheduler->delay(2000); //Ensure that the uartA can be initialized
+
+    hal.console->begin(57600);
 
     setup_uart(hal.uartA, "uartA");  // console
     setup_uart(hal.uartB, "uartB");  // 1st GPS

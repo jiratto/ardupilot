@@ -394,6 +394,7 @@ private:
     void read_airspeed();
     void rpm_update(void);
     void update_weather();
+    void update_rcin();
     
     // Weather info class
     AP_GPS::Weather_State weather_info;
