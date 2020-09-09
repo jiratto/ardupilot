@@ -162,6 +162,7 @@ void Rover::init_ardupilot()
 
     // rtnasv
     ais.init(serial_manager);
+    water_speed.init(serial_manager);
 
     // flag that initialisation has completed
     initialised = true;

@@ -146,9 +146,6 @@ void Rover::rpm_update(void)
     }
 }
 
-/*
-  update weather info and send to ground station
- */
 void Rover::update_weather()
 {
     weather_info = gps.get_weather_state();
@@ -158,4 +155,9 @@ void Rover::update_weather()
 void Rover::update_ais()
 {
     ais.update();
+}
+
+void Rover::update_waterspeed()
+{
+    water_speed.update();
 }

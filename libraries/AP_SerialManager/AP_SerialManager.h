@@ -114,6 +114,7 @@ public:
         SerialProtocol_SLCAN = 22,
         SerialProtocol_RCIN = 23,
         SerialProtocol_AIS = 24,
+        SerialProtocol_WaterSpeed = 25,
     };
 
     // get singleton instance
