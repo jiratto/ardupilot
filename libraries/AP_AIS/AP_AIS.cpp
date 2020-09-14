@@ -736,7 +736,7 @@ bool AP_AIS::decode_latest_term()
 
     // the first term determines the sentence type
     if (_term_number == 0) {
-        if (strcmp(_term, "AIVDO") == 0) {
+        if (strcmp(_term, "AIVDM") == 0) {
             // we found the sentence type for AIS
             _sentence_valid = true;
         }
