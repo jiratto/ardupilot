@@ -152,11 +152,6 @@ void Rover::update_weather()
     gcs().send_message(MSG_WEATHER_INFO);
 }
 
-void Rover::update_ais()
-{
-    ais.update();
-}
-
 void Rover::update_waterspeed()
 {
     water_speed.update();

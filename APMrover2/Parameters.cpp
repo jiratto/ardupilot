@@ -628,6 +628,10 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Advanced
     AP_GROUPINFO("FS_OPTIONS", 48, ParametersG2, fs_options, 0),
 
+    // @Group: AIS_
+    // @Path: ../libraries/AP_AIS/AP_AIS.cpp
+    AP_SUBGROUPINFO(ais, "AIS_",  49, ParametersG2, AP_AIS),
+    
     AP_GROUPEND
 };
 

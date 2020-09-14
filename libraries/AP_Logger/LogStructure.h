@@ -1204,6 +1204,55 @@ struct PACKED log_Arm_Disarm {
     uint16_t arm_checks;
 };
 
+struct PACKED log_AIS_raw {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    uint8_t num;
+    uint8_t total;
+    uint8_t ID;
+    char payload[64];
+};
+
+struct PACKED log_AIS_msg1 {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    uint8_t type;
+    uint8_t repeat;
+    uint32_t mmsi;
+    uint8_t nav;
+    int8_t rot;
+    uint16_t sog;
+    int8_t pos_acc;
+    int32_t lon;
+    int32_t lat;
+    uint16_t cog;
+    uint16_t head;
+    uint8_t sec_utc;
+    uint8_t maneuver;
+    uint8_t raim;
+    uint32_t radio;
+};
+
+struct PACKED log_AIS_msg5 {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    uint8_t repeat;
+    uint32_t mmsi;
+    uint8_t ver;
+    uint32_t imo;
+    char call_sign[16];
+    char name[64];
+    uint8_t vessel_type;
+    uint16_t bow_dim;
+    uint16_t stern_dim;
+    uint8_t port_dim;
+    uint8_t star_dim;
+    uint8_t fix;
+    uint8_t draught;
+    char dest[64];
+    uint8_t dte;
+};
+
 // FMT messages define all message formats other than FMT
 // UNIT messages define units which can be referenced by FMTU messages
 // FMTU messages associate types (e.g. centimeters/second/second) to FMT message fields
@@ -1772,7 +1821,10 @@ enum LogMessages : uint8_t {
     LOG_ARM_DISARM_MSG,
     LOG_OA_BENDYRULER_MSG,
     LOG_OA_DIJKSTRA_MSG,
-
+    LOG_AIS_RAW_MSG,
+    LOG_AIS_MSG1,
+    LOG_AIS_MSG5,
+    
     _LOG_LAST_MSG_
 };
 

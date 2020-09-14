@@ -38,6 +38,7 @@
 #include <AP_VisualOdom/AP_VisualOdom.h>
 #include <AP_OpticalFlow/OpticalFlow.h>
 #include <AP_Baro/AP_Baro.h>
+#include <AP_AIS/AP_AIS.h>
 
 #include <stdio.h>
 
@@ -783,6 +784,7 @@ ap_message GCS_MAVLINK::mavlink_id_to_ap_message_id(const uint32_t mavlink_id) c
         { MAVLINK_MSG_ID_DEEPSTALL,             MSG_LANDING},
         { MAVLINK_MSG_ID_EXTENDED_SYS_STATE,    MSG_EXTENDED_SYS_STATE},
         { MAVLINK_MSG_ID_AUTOPILOT_VERSION,     MSG_AUTOPILOT_VERSION},
+        { MAVLINK_MSG_ID_AIS_VESSEL,            MSG_AIS_VESSEL},
             };
 
     for (uint8_t i=0; i<ARRAY_SIZE(map); i++) {

@@ -366,6 +366,10 @@ bool GCS_MAVLINK_Rover::try_send_message(enum ap_message id)
         break;
     }
 
+    case MSG_AIS_VESSEL:
+        rover.g2.ais.send(chan);
+        break;
+
     default:
         return GCS_MAVLINK::try_send_message(id);
     }
@@ -542,7 +546,8 @@ static const ap_message STREAM_PARAMS_msgs[] = {
     MSG_NEXT_PARAM
 };
 static const ap_message STREAM_ADSB_msgs[] = {
-    MSG_ADSB_VEHICLE
+    MSG_ADSB_VEHICLE,
+    MSG_AIS_VESSEL,
 };
 
 const struct GCS_MAVLINK::stream_entries GCS_MAVLINK::all_stream_entries[] = {

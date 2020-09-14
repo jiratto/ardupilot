@@ -91,6 +91,8 @@ void Rover::init_ardupilot()
     log_init();
 #endif
 
+    g2.ais.init();
+
     // initialise compass
     AP::compass().set_log_bit(MASK_LOG_COMPASS);
     AP::compass().init();
@@ -161,7 +163,6 @@ void Rover::init_ardupilot()
     BoardConfig.init_safety();
 
     // rtnasv
-    ais.init(serial_manager);
     water_speed.init(serial_manager);
 
     // flag that initialisation has completed

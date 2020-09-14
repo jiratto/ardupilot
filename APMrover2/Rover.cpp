@@ -55,7 +55,6 @@ const AP_Scheduler::Task Rover::scheduler_tasks[] = {
     SCHED_TASK(set_servos,            400,    200),
     SCHED_TASK(update_GPS,             50,    300),
     SCHED_TASK(update_weather,          1,   1000),
-    SCHED_TASK(update_ais,              1,   1000),
     SCHED_TASK(update_waterspeed,       1,   1000),
     SCHED_TASK_CLASS(AP_Baro,             &rover.barometer,        update,         10,  200),
     SCHED_TASK_CLASS(AP_Beacon,           &rover.g2.beacon,        update,         50,  200),
@@ -114,6 +113,7 @@ const AP_Scheduler::Task Rover::scheduler_tasks[] = {
 #if OSD_ENABLED == ENABLED
     SCHED_TASK(publish_osd_info,        1,     10),
 #endif
+    SCHED_TASK_CLASS(AP_AIS, &rover.g2.ais, update, 20, 100),
 };
 
 constexpr int8_t Rover::_failsafe_priorities[7];

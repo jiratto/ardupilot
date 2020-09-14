@@ -69,6 +69,7 @@
 #include <AP_Follow/AP_Follow.h>
 #include <AP_OSD/AP_OSD.h>
 #include <AP_WindVane/AP_WindVane.h>
+#include <AP_AIS/AP_AIS.h>
 
 #ifdef ENABLE_SCRIPTING
 #include <AP_Scripting/AP_Scripting.h>
@@ -94,7 +95,6 @@
 #include "GCS_Rover.h"
 #include "AP_Rally.h"
 #include "RC_Channel.h"                  // RC Channel Library
-#include "AP_AIS.h"
 #include "AP_WaterSpeed.h"
 
 class Rover : public AP_Vehicle {
@@ -396,12 +396,10 @@ private:
     void read_airspeed();
     void rpm_update(void);
     void update_weather();
-    void update_ais();
     void update_waterspeed();
 
     // rtnasv devices
     AP_GPS::Weather_State weather_info;
-    AP_AIS ais;
     AP_WaterSpeed water_speed; 
     
     // Steering.cpp

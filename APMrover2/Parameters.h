@@ -398,6 +398,9 @@ public:
 
     // FS options
     AP_Int32 fs_options;
+
+    // AIS Lib
+    AP_AIS ais;
 };
 
 extern const AP_Param::Info var_info[];
