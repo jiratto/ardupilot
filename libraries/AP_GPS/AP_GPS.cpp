@@ -1226,11 +1226,6 @@ const Vector3f &AP_GPS::get_antenna_offset(uint8_t instance) const
     return _antenna_offset[instance];
 }
 
-AP_GPS::Weather_State AP_GPS::get_weather_state() const
-{
-    return weather;
-}
-
 /*
   returns the desired gps update rate in milliseconds
   this does not provide any guarantee that the GPS is updating at the requested

@@ -171,30 +171,20 @@ public:
     };
 
     struct Weather_State {
-        uint8_t instance; // the instance number of this GPS
-        // HGD
-        int32_t heading_mag;
-        int32_t deviation_mag;
-        int32_t variation_mag;
-        // HDT
-        int32_t heading_north;
-        // MWV
-        int32_t wind_ang_bow;
-        int32_t wind_spd_rel;
-        int32_t wind_spd_the;
-        // MDA
-        int32_t pressure_bar;
-        int32_t temp_celcius;
-        int32_t humid_rel;
-        int32_t wind_ang_north;
-        int32_t wind_ang_mag;
-        int32_t wind_spd_knot;
-        // Underwater uSonic mesurement
-        int32_t water_depth;
-        int32_t water_temp;
-        int32_t water_speed;
-        int32_t total_miles;
-        int32_t miles_since_reset;
+        uint8_t instance;           //!< the instance number of this GPS
+        // wind
+        float wind_angle;           //!< Wind Angle, 0 to 359 degrees
+        float wind_speed_true;      //!< Wind Speed True, m/s
+        float wind_speed_relative;  //!< Wind Speed Relative, m/s
+        float barometric_pressure;  //!< Barometric pressure, bars
+        float air_temperature;      //!< Air temperature, degrees C
+        float relative_humidity;    //!< Relative humidity, percent
+        // water
+        float water_depth;          //!< Water depth relative to transducer, meters
+        float water_temperature;    //!< Water temperature, degrees C
+        float water_speed;          //!< Speed of vessel relative to the water, knots
+        float total_miles;          //!< Total cumulative water distance, Nautical Miles 
+        float miles_since_reset;    //!< Water distance since Reset, Nautical Miles 
     };
 
     /// Startup initialisation.
@@ -405,8 +395,10 @@ public:
     // return a 3D vector defining the offset of the GPS antenna in meters relative to the body frame origin
     const Vector3f &get_antenna_offset(uint8_t instance) const;
 
-    // return weather state from extension device (Airmar 150wx)
-    Weather_State get_weather_state() const;
+    // rtnasv
+    Weather_State get_weather_state() const {
+        return weather;
+    }
     
     // set position for HIL
     void setHIL(uint8_t instance, GPS_Status status, uint64_t time_epoch_ms,
@@ -517,9 +509,11 @@ private:
     // Note allowance for an additional instance to contain blended data
     GPS_timing timing[GPS_MAX_INSTANCES];
     GPS_State state[GPS_MAX_INSTANCES];
-    Weather_State weather;
     AP_GPS_Backend *drivers[GPS_MAX_RECEIVERS];
     AP_HAL::UARTDriver *_port[GPS_MAX_RECEIVERS];
+
+    // rtnasv
+    Weather_State weather;
 
     /// primary GPS instance
     uint8_t primary_instance;

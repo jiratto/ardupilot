@@ -53,7 +53,10 @@ class AP_GPS_NMEA_EXT : public AP_GPS_Backend
     friend class AP_GPS_NMEA_EXT_Test;
 
 public:
-    AP_GPS_NMEA_EXT(AP_GPS &_gps, AP_GPS::GPS_State &_state, AP_GPS::Weather_State &_weather, AP_HAL::UARTDriver *_port);
+    AP_GPS_NMEA_EXT(AP_GPS &_gps, 
+                    AP_GPS::GPS_State &_state, 
+                    AP_GPS::Weather_State &_weather, 
+                    AP_HAL::UARTDriver *_port);
     
     using AP_GPS_Backend::AP_GPS_Backend;
 
@@ -150,16 +153,22 @@ private:
     uint32_t _last_VTG_ms = 0;
     uint32_t _last_HDT_ms = 0;  
 
-    // extension state
+    // weather state
     AP_GPS::Weather_State &weather;
-
-    // MWV Message
-    int32_t _wind_ang_bow;                                      ///< Wind angle relative to vessel bow/centerline
-    int32_t _wind_spd_rel;                                      ///< Apparent wind speed (like standing on a boat)
-    int32_t _wind_spd_the;                                      ///< Theoretical wind speed (calculated)
-    bool _the_selector = false;
-    bool _mwv_data_valid = false;
-    bool _new_weather_message = false;
+    uint32_t _last_MWV_ms = 0;
+    uint32_t _last_MDA_ms = 0;
+    uint32_t _last_DPT_ms = 0;
+    uint32_t _last_MTW_ms = 0;
+    uint32_t _last_VHW_ms = 0;
+    uint32_t _last_VLW_ms = 0;
+    float _new_wind_angle;
+    char _new_wind_reference;
+    float _new_wind_speed;
+    char _new_wind_speed_units;
+    char _new_wind_status;
+    float _new_barometric_pressure;
+    float _new_air_temperature;
+    float _new_relative_humidity;
 
     /// @name	Init strings
     ///			In ::init, an attempt is made to configure the GPS

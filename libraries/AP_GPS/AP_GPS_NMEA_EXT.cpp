@@ -54,7 +54,7 @@ extern const AP_HAL::HAL& hal;
 
 AP_GPS_NMEA_EXT::AP_GPS_NMEA_EXT(AP_GPS &_gps, 
                                  AP_GPS::GPS_State &_state, 
-                                 AP_GPS::Weather_State &_weather, 
+                                 AP_GPS::Weather_State &_weather,
                                  AP_HAL::UARTDriver *_port) : AP_GPS_Backend(_gps, _state, _port),
     weather(_weather)
 {
@@ -203,7 +203,13 @@ uint32_t AP_GPS_NMEA_EXT::_parse_degrees()
  */
 bool AP_GPS_NMEA_EXT::_have_new_message()
 {
-    if (_new_weather_message) {
+    uint32_t now = AP_HAL::millis();
+    if (now - _last_MWV_ms < 1000 ||
+        now - _last_MDA_ms < 1000 ||
+        now - _last_DPT_ms < 1000 ||
+        now - _last_MTW_ms < 1000 ||
+        now - _last_VHW_ms < 1000 ||
+        now - _last_VLW_ms < 1000) {
         return true;
     }
 
@@ -211,7 +217,6 @@ bool AP_GPS_NMEA_EXT::_have_new_message()
         _last_GGA_ms == 0) {
         return false;
     }
-    uint32_t now = AP_HAL::millis();
     if (now - _last_RMC_ms > 150 ||
         now - _last_GGA_ms > 150) {
         return false;
@@ -321,58 +326,44 @@ bool AP_GPS_NMEA_EXT::_term_complete()
                 }
             }
 
-            // Check each weather message type and assign it's
+            uint32_t now = AP_HAL::millis();
             switch (_sentence_type) {
             case _WIN_SENTENCE_MWV:
-                if (_mwv_data_valid) {
-                    weather.wind_ang_bow = _wind_ang_bow;
-                    weather.wind_spd_rel = _wind_spd_rel;
-                    weather.wind_spd_the = _wind_spd_the;
-                    _mwv_data_valid = false;
-                    _new_weather_message = true;
+                _last_MWV_ms = now;
+                weather.wind_angle = wrap_360(_new_wind_angle * 0.01f);
+                if (_new_wind_reference == 'R') {
+                    if (_new_wind_speed_units == 'K') {
+                        weather.wind_speed_relative = (_new_wind_speed * 278) / 100000;
+                    } else if (_new_wind_speed_units == 'M') { 
+                        weather.wind_speed_relative = _new_wind_speed * 0.01f;
+                    } else if (_new_wind_speed_units == 'N') {
+                        weather.wind_speed_relative = (_new_wind_speed * 514) / 100000;
+                    }
+                } else if (_new_wind_reference == 'T') {
+                    if (_new_wind_speed_units == 'K') {
+                        weather.wind_speed_true = (_new_wind_speed * 278) / 100000;
+                    } else if (_new_wind_speed_units == 'M') {
+                        weather.wind_speed_true = _new_wind_speed * 0.01f;
+                    } else if (_new_wind_speed_units == 'N') {
+                        weather.wind_speed_true = (_new_wind_speed * 514) / 100000;
+                    }
                 }
                 break;
             case _WIN_SENTENCE_MDA:
-                // if (_have_MDA_message) {
-                //     weather.pressure_bar = _pressure_bar;
-                //     weather.temp_celcius = _temp_celcius;
-                //     weather.humid_rel = _humid_rel;
-                //     weather.wind_ang_north = _wind_ang_north;
-                //     weather.wind_ang_mag = _wind_ang_mag;
-                //     weather.wind_spd_knot = _wind_spd_knot;
-                //     _have_MDA_message = false;
-                //     _new_weather_message = true;
-                // }
+                _last_MDA_ms = now;
                 break;
             case _SON_SENTENCE_DPT:
-                // if (_have_DPT_message) {
-                //     weather.water_depth = _water_depth;
-                //     _have_DPT_message = false;
-                //     _new_weather_message = true;
-                // }
+                _last_DPT_ms = now;
                 break;
             case _SON_SENTENCE_MTW:
-                // if (_have_MTW_message) {
-                //     weather.water_temp = _water_temp;
-                //     _have_MTW_message = false;
-                //     _new_weather_message = true;
-                // }
+                _last_MTW_ms = now;
                 break;
             case _SON_SENTENCE_VHW:
-                // if (_have_VHW_message) {
-                //     weather.water_speed = _water_speed;
-                //     _have_VHW_message = false;
-                //     _new_weather_message = true;
-                // }
+                _last_VHW_ms = now;
                 break;
             case _SON_SENTENCE_VLW:
-                // if(_have_VLW_message) {
-                //     weather.total_miles = _total_miles;
-                //     weather.miles_since_reset = _miles_since_reset;
-                //     _have_VLW_message = false;
-                //     _new_weather_message = true;
-                // }
-                break;
+                _last_VLW_ms = now;
+                break;                
             }
             // see if we got a good message
             return _have_new_message();
@@ -495,31 +486,23 @@ bool AP_GPS_NMEA_EXT::_term_complete()
             _new_course = _parse_decimal_100(_term);
             break;
 
-        // wind Message
+        // MWV- Wind Speed and Angle
         // 
-        case _WIN_SENTENCE_MWV + 1: // Wind angle relative to vessel bow
-            _wind_ang_bow = _parse_decimal_100(_term);
+        case _WIN_SENTENCE_MWV + 1:
+            _new_wind_angle = _parse_decimal_100(_term);
             break;
-        case _WIN_SENTENCE_MWV + 2: // Wind speed reference
-            if (_term[0] == 'T')
-                _the_selector = true;
-            else
-                _the_selector = false;
+        case _WIN_SENTENCE_MWV + 2:
+            _new_wind_reference = _term[0];
             break;
-        case _WIN_SENTENCE_MWV + 3: // Wind speed
-            if (_the_selector) {
-                _wind_spd_the = _parse_decimal_100(_term);
-            } else {
-                _wind_spd_rel = _parse_decimal_100(_term);
-            }
+        case _WIN_SENTENCE_MWV + 3:
+            _new_wind_speed = _parse_decimal_100(_term);
             break;
-        case _WIN_SENTENCE_MWV + 5: // Validitiy check
-            if (_term[0] == 'A')
-                _mwv_data_valid = true;
-            else
-                _mwv_data_valid = false;
+        case _WIN_SENTENCE_MWV + 4:
+            _new_wind_speed_units = _term[0];
             break;
-
+        case _WIN_SENTENCE_MWV + 5:
+            _new_wind_status = _term[0];
+            break;
         }
     }
 
