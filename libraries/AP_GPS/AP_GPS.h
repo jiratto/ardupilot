@@ -171,20 +171,21 @@ public:
     };
 
     struct Weather_State {
-        uint8_t instance;           //!< the instance number of this GPS
+        uint8_t instance;               //!< the instance number of this GPS
         // wind
-        float wind_angle;           //!< Wind Angle, 0 to 359 degrees
-        float wind_speed_true;      //!< Wind Speed True, m/s
-        float wind_speed_relative;  //!< Wind Speed Relative, m/s
-        float barometric_pressure;  //!< Barometric pressure, bars
-        float air_temperature;      //!< Air temperature, degrees C
-        float relative_humidity;    //!< Relative humidity, percent
+        float wind_angle_true;          //!< Wind Angle True
+        float wind_angle_relative;      //!< Wind Angle Relative
+        float wind_speed_true;          //!< Wind Speed True, m/s
+        float wind_speed_relative;      //!< Wind Speed Relative, m/s
+        float air_barometric_pressure;  //!< Barometric pressure, bars
+        float air_temperature;          //!< Air temperature, degrees C
+        float air_relative_humidity;    //!< Relative humidity, percent
         // water
-        float water_depth;          //!< Water depth relative to transducer, meters
-        float water_temperature;    //!< Water temperature, degrees C
-        float water_speed;          //!< Speed of vessel relative to the water, knots
-        float total_miles;          //!< Total cumulative water distance, Nautical Miles 
-        float miles_since_reset;    //!< Water distance since Reset, Nautical Miles 
+        float water_depth;              //!< Water depth relative to transducer, meters
+        float water_temperature;        //!< Water temperature, degrees C
+        float water_speed;              //!< Speed of vessel relative to the water, knots
+        float miles_total;              //!< Total cumulative water distance, Nautical Miles 
+        float miles_since_reset;        //!< Water distance since Reset, Nautical Miles 
     };
 
     /// Startup initialisation.

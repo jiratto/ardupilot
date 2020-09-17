@@ -330,8 +330,8 @@ bool AP_GPS_NMEA_EXT::_term_complete()
             switch (_sentence_type) {
             case _WIN_SENTENCE_MWV:
                 _last_MWV_ms = now;
-                weather.wind_angle = wrap_360(_new_wind_angle * 0.01f);
                 if (_new_wind_reference == 'R') {
+                    weather.wind_angle_relative = wrap_360(_new_wind_angle * 0.01f);
                     if (_new_wind_speed_units == 'K') {
                         weather.wind_speed_relative = (_new_wind_speed * 278) / 100000;
                     } else if (_new_wind_speed_units == 'M') { 
@@ -340,6 +340,7 @@ bool AP_GPS_NMEA_EXT::_term_complete()
                         weather.wind_speed_relative = (_new_wind_speed * 514) / 100000;
                     }
                 } else if (_new_wind_reference == 'T') {
+                    weather.wind_angle_true = wrap_360(_new_wind_angle * 0.01f);
                     if (_new_wind_speed_units == 'K') {
                         weather.wind_speed_true = (_new_wind_speed * 278) / 100000;
                     } else if (_new_wind_speed_units == 'M') {

@@ -297,16 +297,17 @@ void Rover::send_weather_info(const mavlink_channel_t chan)
 {
 //    gcs().send_text(MAV_SEVERITY_INFO, "wind_angle : %0.2f", weather_info.wind_angle);
     mavlink_msg_weather_info_send(chan,
-                                  weather_info.wind_angle, 
+                                  weather_info.wind_angle_true,
+                                  weather_info.wind_angle_relative, 
                                   weather_info.wind_speed_true,
                                   weather_info.wind_speed_relative,
-                                  weather_info.barometric_pressure,
-                                  weather_info.air_temperature, 
-                                  weather_info.relative_humidity,
+                                  weather_info.air_barometric_pressure,
+                                  weather_info.air_temperature,
+                                  weather_info.air_relative_humidity,
                                   weather_info.water_depth, 
                                   weather_info.water_temperature,
                                   weather_info.water_speed, 
-                                  weather_info.total_miles,
+                                  weather_info.miles_total,
                                   weather_info.miles_since_reset);                                  
 }
 
