@@ -371,6 +371,10 @@ bool GCS_MAVLINK_Rover::try_send_message(enum ap_message id)
         rover.g2.ais.send(chan);
         break;
 
+    case MSG_WATER_SPEED:
+        rover.g2.water_speed.send(chan);
+        break;
+
     default:
         return GCS_MAVLINK::try_send_message(id);
     }

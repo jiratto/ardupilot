@@ -29,7 +29,7 @@ protected:
     int16_t char_to_hex(char a);   
 
 protected:
-    AP_HAL::UARTDriver *uart_;
+    AP_HAL::UARTDriver *_uart;
     char _term[50];             // buffer for the current term within the current sentence
     uint8_t _term_offset;       // offset within the _term buffer where the next character should be placed
     uint8_t _term_number;       // term index within the current sentence

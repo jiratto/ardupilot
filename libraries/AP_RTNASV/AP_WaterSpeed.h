@@ -7,17 +7,28 @@ class AP_WaterSpeed : public AP_NMEA_Driver
 public: 
     AP_WaterSpeed();
 
+    /* Do not allow copies */
     AP_WaterSpeed(const AP_WaterSpeed &other) = delete;
     AP_WaterSpeed &operator=(const AP_WaterSpeed&) = delete;
 
-    static AP_WaterSpeed *get_singleton() {
-        return singleton_;
-    }
+    // Get the singleton
+    static AP_WaterSpeed *get_singleton();
 
+    // Return true if device is enabled
+    bool enabled() const;
+
+    void update();
+
+    // Initialize the device and prepare it for use
+    void init();
     void init(const AP_SerialManager &serial_manager) override;
+
+    // send mavlink message to GCS
+    void send(mavlink_channel_t chan);
     
 private:
-    static AP_WaterSpeed *singleton_;
+    static AP_WaterSpeed *_singleton;
+
     bool decode_latest_term() override;
 
     enum sentence_types {

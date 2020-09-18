@@ -151,8 +151,3 @@ void Rover::update_weather()
     weather_info = gps.get_weather_state();
     gcs().send_message(MSG_WEATHER_INFO);
 }
-
-void Rover::update_waterspeed()
-{
-    water_speed.update();
-}

@@ -75,5 +75,6 @@ enum ap_message : uint8_t {
     MSG_AUTOPILOT_VERSION,
     MSG_WEATHER_INFO,
     MSG_AIS_VESSEL,
+    MSG_WATER_SPEED,
     MSG_LAST // MSG_LAST must be the last entry in this enum
 };

@@ -27,6 +27,7 @@ def build(bld):
             'AP_OSD',
             'AP_WindVane',
             'AP_AIS',
+            'AP_RTNASV',
         ],
     )
 

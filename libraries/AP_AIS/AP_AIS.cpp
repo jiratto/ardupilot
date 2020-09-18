@@ -1,22 +1,3 @@
-/*
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-// Automatic Identification System, https://gpsd.gitlab.io/gpsd/AIVDM.html
-
-// ToDo: enable receiving of the Mavlink AIS message, type bitmask?
-
 #include "AP_AIS.h"
 
 #include <AP_Logger/AP_Logger.h>
@@ -62,9 +43,8 @@ const AP_Param::GroupInfo AP_AIS::var_info[] = {
     AP_GROUPEND
 };
 
-// constructor
-AP_AIS::AP_AIS() :
-    _list(8)
+AP_AIS::AP_AIS()
+    : _list(8)
 {
     AP_Param::setup_object_defaults(this, var_info);
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
@@ -75,44 +55,29 @@ AP_AIS::AP_AIS() :
     _singleton = this;
 }
 
-// Get the AIS singleton
 AP_AIS *AP_AIS::get_singleton()
 {
     return _singleton;
 }
 
-// return true if AIS is enabled
 bool AP_AIS::enabled() const
 {
     return _type != AIS_NONE;
 }
 
-// Initialize the AIS object and prepare it for use
 void AP_AIS::init()
 {
-    gcs().send_text(MAV_SEVERITY_INFO, "AIS call init");
-
     if (!enabled()) {
-        gcs().send_text(MAV_SEVERITY_INFO, "AIS disable");
         return;
     }
-    gcs().send_text(MAV_SEVERITY_INFO, "AIS enabled");
 
     _uart = AP::serialmanager().find_serial(AP_SerialManager::SerialProtocol_AIS, 0);
     if (_uart == nullptr) {
         return;
     }
-    _uart->begin(AP::serialmanager().find_baudrate(AP_SerialManager::SerialProtocol_AIS, 0));
-    
-    if (_uart == nullptr) {
-        gcs().send_text(MAV_SEVERITY_WARNING, "AIS initialized failed");
-    } else {
-        gcs().send_text(MAV_SEVERITY_INFO, "AIS initialized");
-    }
-
+    _uart->begin(AP::serialmanager().find_baudrate(AP_SerialManager::SerialProtocol_AIS, 0));   
 }
 
-// update AIS, expected to be called at 20hz
 void AP_AIS::update()
 {
     if (!_uart || !enabled()) {
@@ -231,7 +196,6 @@ void AP_AIS::update()
     }
 }
 
-// Send a AIS mavlink message
 void AP_AIS::send(mavlink_channel_t chan)
 {
     if (!enabled()) {
@@ -273,10 +237,6 @@ void AP_AIS::buffer_shift(uint8_t i)
     _AIVDM_buffer[AIVDM_BUFFER_SIZE - 1].payload[0] = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Functions related to the vessel list
-
-// find vessel index in existing list, if not then return new index if possible
 bool AP_AIS::get_vessel_index(uint32_t mmsi, uint16_t &index, uint32_t lat, uint32_t lon)
 {
     const uint16_t list_size = _list.max_items();
@@ -372,9 +332,6 @@ void AP_AIS::clear_list_item(uint16_t index)
         _list[index].info.name[0] = 0; // char The vessel name
     }
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Functions for decoding AIVDM payload mesages
 
 bool AP_AIS::payload_decode(const char *payload)
 {
@@ -585,11 +542,6 @@ bool AP_AIS::decode_static_and_voyage_data(const char *payload)
     return true;
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Functions for decoding AIVDM payload bits
-
-// decode bits to a char array
 void AP_AIS::get_char(const char *payload, char *array, uint16_t low, uint16_t high)
 {
     bool found_char = false;
@@ -609,7 +561,6 @@ void AP_AIS::get_char(const char *payload, char *array, uint16_t low, uint16_t h
     array[length] = 0; // always null terminate
 }
 
-// read the specified bits from the char array each char giving 6 bits
 uint32_t AP_AIS::get_bits(const char *payload, uint16_t low, uint16_t high)
 {
     uint8_t char_low = low / 6;
@@ -639,8 +590,6 @@ uint32_t AP_AIS::get_bits(const char *payload, uint16_t low, uint16_t high)
     return val;
 }
 
-// read the specified bits from the char array each char giving 6 bits
-// As the values are a arbitrary length the sign bit is in the wrong place for standard length varables
 int32_t AP_AIS::get_bits_signed(const char *payload, uint16_t low, uint16_t high)
 {
     uint32_t value = get_bits(payload, low+1, high);
@@ -651,7 +600,6 @@ int32_t AP_AIS::get_bits_signed(const char *payload, uint16_t low, uint16_t high
     return value;
 }
 
-// Convert payload chars to bits
 uint8_t AP_AIS::payload_char_decode(const char c)
 {
     uint8_t value = c;
@@ -662,10 +610,6 @@ uint8_t AP_AIS::payload_char_decode(const char c)
     return value;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Functions for decoding and logging AIVDM NMEA sentence
-
-// log a raw AIVDM a message
 void AP_AIS::log_raw(const AIVDM *msg)
 {
     struct log_AIS_raw pkt{
@@ -680,8 +624,6 @@ void AP_AIS::log_raw(const AIVDM *msg)
     AP::logger().WriteBlock(&pkt, sizeof(pkt));
 }
 
-// add a single character to the buffer and attempt to decode
-// returns true if a complete sentence was successfully decoded
 bool AP_AIS::decode(char c)
 {
     switch (c) {
@@ -724,8 +666,6 @@ bool AP_AIS::decode(char c)
     return false;
 }
 
-// decode the most recently consumed term
-// returns true if new sentence has just passed checksum test and is validated
 bool AP_AIS::decode_latest_term()
 {
     // handle the last term in a message
@@ -782,7 +722,6 @@ bool AP_AIS::decode_latest_term()
     return false;
 }
 
-// return the numeric value of an ascii hex character
 int16_t AP_AIS::char_to_hex(char a)
 {
     if (a >= 'A' && a <= 'F')
@@ -792,7 +731,6 @@ int16_t AP_AIS::char_to_hex(char a)
     else
         return a - '0';
 }
-
 
 AP_AIS *AP_AIS::_singleton = nullptr;
 

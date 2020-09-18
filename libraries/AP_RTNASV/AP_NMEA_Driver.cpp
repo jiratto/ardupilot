@@ -14,12 +14,12 @@ AP_NMEA_Driver::AP_NMEA_Driver()
 
 void AP_NMEA_Driver::update(void)
 {
-    if (uart_ == nullptr) {
+    if (_uart == nullptr) {
         return;
     }
-    int16_t nbytes = uart_->available();
+    int16_t nbytes = _uart->available();
     while (nbytes-- > 0) {
-        char c = uart_->read();
+        char c = _uart->read();
         if (decode(c)) {
         }
     }

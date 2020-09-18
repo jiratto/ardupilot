@@ -90,9 +90,10 @@ void Rover::init_ardupilot()
 #if LOGGING_ENABLED == ENABLED
     log_init();
 #endif
-
+    // rtnasv
     g2.ais.init();
-
+    g2.water_speed.init();
+    
     // initialise compass
     AP::compass().set_log_bit(MASK_LOG_COMPASS);
     AP::compass().init();
@@ -161,9 +162,6 @@ void Rover::init_ardupilot()
 
     // disable safety if requested
     BoardConfig.init_safety();
-
-    // rtnasv
-    water_speed.init(serial_manager);
 
     // flag that initialisation has completed
     initialised = true;

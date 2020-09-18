@@ -399,8 +399,9 @@ public:
     // FS options
     AP_Int32 fs_options;
 
-    // AIS Lib
+    // rtnasv devices
     AP_AIS ais;
+    AP_WaterSpeed water_speed;
 };
 
 extern const AP_Param::Info var_info[];

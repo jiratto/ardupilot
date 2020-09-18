@@ -1,17 +1,3 @@
-/*
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 #pragma once
 
 #include <AP_Param/AP_Param.h>
@@ -30,25 +16,26 @@ public:
     AP_AIS(const AP_AIS &other) = delete;
     AP_AIS &operator=(const AP_AIS&) = delete;
 
-    // Get the AIS singleton
+    // Get the singleton
     static AP_AIS *get_singleton();
 
-    // return true if AIS is enabled
+    // Return true if device is enabled
     bool enabled() const;
 
     // Initialize the AIS object and prepare it for use
     void init();
 
-    // update AIS, expected to be called at 20hz
+    // Device update loop
     void update();
 
-    // send mavlink AIS message
+    // send mavlink message to GCS
     void send(mavlink_channel_t chan);
 
     // parameter block
     static const struct AP_Param::GroupInfo var_info[];
 
 private:
+    static AP_AIS *_singleton;
 
     // parameters
     AP_Int8 _type;             // type of AIS recever
@@ -129,8 +116,6 @@ private:
     uint8_t _checksum;         // checksum accumulator
     bool _term_is_checksum;    // current term is the checksum
     bool _sentence_valid;      // is current sentence valid so far
-
-    static AP_AIS *_singleton;
 };
 
 namespace AP {
