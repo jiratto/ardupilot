@@ -113,7 +113,7 @@ const AP_Scheduler::Task Rover::scheduler_tasks[] = {
     SCHED_TASK(publish_osd_info,        1,     10),
 #endif
     SCHED_TASK_CLASS(AP_AIS, &rover.g2.ais, update, 20, 100),
-    SCHED_TASK_CLASS(AP_WaterSpeed, &rover.g2.water_speed, update, 20, 100),
+    SCHED_TASK_CLASS(AP_WaterSpeed, &rover.g2.waterspeed, update, 20, 100),
 };
 
 constexpr int8_t Rover::_failsafe_priorities[7];

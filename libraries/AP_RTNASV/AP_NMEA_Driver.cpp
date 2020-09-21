@@ -12,19 +12,6 @@ AP_NMEA_Driver::AP_NMEA_Driver()
 {
 }
 
-void AP_NMEA_Driver::update(void)
-{
-    if (_uart == nullptr) {
-        return;
-    }
-    int16_t nbytes = _uart->available();
-    while (nbytes-- > 0) {
-        char c = _uart->read();
-        if (decode(c)) {
-        }
-    }
-}
-
 bool AP_NMEA_Driver::decode(char c)
 {
     switch (c) {

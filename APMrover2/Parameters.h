@@ -401,7 +401,7 @@ public:
 
     // rtnasv devices
     AP_AIS ais;
-    AP_WaterSpeed water_speed;
+    AP_WaterSpeed waterspeed;
 };
 
 extern const AP_Param::Info var_info[];

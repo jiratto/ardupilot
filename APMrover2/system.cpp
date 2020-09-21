@@ -92,7 +92,7 @@ void Rover::init_ardupilot()
 #endif
     // rtnasv
     g2.ais.init();
-    g2.water_speed.init();
+    g2.waterspeed.init();
     
     // initialise compass
     AP::compass().set_log_bit(MASK_LOG_COMPASS);

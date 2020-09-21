@@ -16,10 +16,6 @@ public:
     
     virtual ~AP_NMEA_Driver(void) {}
 
-    virtual void init(const AP_SerialManager &serial_manager) = 0;
-
-    void update(void);
-
 protected:
 
     virtual bool decode_latest_term(void) = 0;

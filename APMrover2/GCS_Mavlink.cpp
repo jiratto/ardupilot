@@ -372,7 +372,7 @@ bool GCS_MAVLINK_Rover::try_send_message(enum ap_message id)
         break;
 
     case MSG_WATER_SPEED:
-        rover.g2.water_speed.send(chan);
+        rover.g2.waterspeed.send(chan);
         break;
 
     default:
@@ -546,6 +546,7 @@ static const ap_message STREAM_EXTRA3_msgs[] = {
     MSG_RPM,
     MSG_WHEEL_DISTANCE,
     MSG_ESC_TELEMETRY,
+    MSG_WATER_SPEED,
 };
 static const ap_message STREAM_PARAMS_msgs[] = {
     MSG_NEXT_PARAM

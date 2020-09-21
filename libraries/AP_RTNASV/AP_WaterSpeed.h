@@ -1,8 +1,9 @@
 #pragma once
 
-#include "AP_NMEA_Driver.h"
+#include <AP_HAL/AP_HAL.h>
+#include <AP_SerialManager/AP_SerialManager.h>
 
-class AP_WaterSpeed : public AP_NMEA_Driver
+class AP_WaterSpeed
 {
 public: 
     AP_WaterSpeed();
@@ -17,34 +18,56 @@ public:
     // Return true if device is enabled
     bool enabled() const;
 
+    // Device update loop
     void update();
 
     // Initialize the device and prepare it for use
     void init();
-    void init(const AP_SerialManager &serial_manager) override;
 
-    // send mavlink message to GCS
+    // Send mavlink message to GCS
     void send(mavlink_channel_t chan);
     
 private:
-    static AP_WaterSpeed *_singleton;
-
-    bool decode_latest_term() override;
+    AP_HAL::UARTDriver *_uart;
+    char _term[50];             // buffer for the current term within the current sentence
+    uint8_t _term_offset;       // offset within the _term buffer where the next character should be placed
+    uint8_t _term_number;       // term index within the current sentence
+    uint8_t _checksum;          // checksum accumulator
+    bool _term_is_checksum;     // current term is the checksum
+    bool _sentence_valid;       // is current sentence valid so far
+    char _sentence_begin;       // sentence begin char
 
     enum sentence_types {
-        NMEA_SENTENCE_VBW = 32,
+        NMEA_SENTENCE_VHW = 32,
         NMEA_SENTENCE_OTHER = 0
     };
     uint16_t sentence_type_;
 
-    float water_speed_long_; // Longitudinal water speed, "-" means astern
-    float water_speed_tran_; // Transverse water speed, "-" means port
-    bool water_speed_valid_;
-    float ground_speed_long_; // Longitudinal ground speed, "-" means astern
-    float ground_speed_tran_; // Transverse ground speed, "-" means port
-    bool ground_speed_valid_;
+    // Try and decode NMEA message
+    bool decode(char c);
+
+    // Decode each term
+    bool decode_latest_term();
+
+    // Convert from char to hex value for checksum
+    int16_t char_to_hex(char a);
+    
+    // Parses the as a decimal number with up to 3 decimal digits
+    static int32_t _parse_decimal_100(const char *p);
+
+    struct waterspeed_vehicle_t {
+        mavlink_water_speed_t info;
+        uint32_t last_update_ms;    // last time this was refreshed, allows timeouts
+        uint32_t last_send_ms;      // last time this message was sent via mavlink, stops us spamming the link
+    };
+    waterspeed_vehicle_t _result;
+
+    int32_t _new_water_speed_true;
+    int32_t _new_water_speed_relative;
+
+    static AP_WaterSpeed *_singleton;
 };
 
 namespace AP {
-    AP_WaterSpeed &waterspeed();
+    AP_WaterSpeed *waterspeed();
 };
