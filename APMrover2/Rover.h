@@ -71,6 +71,7 @@
 #include <AP_WindVane/AP_WindVane.h>
 #include <AP_AIS/AP_AIS.h>
 #include <AP_RTNASV/AP_WaterSpeed.h>
+#include <AP_ADC/AP_ADC_ADS1115.h>
 
 #ifdef ENABLE_SCRIPTING
 #include <AP_Scripting/AP_Scripting.h>
@@ -396,9 +397,14 @@ private:
     void read_airspeed();
     void rpm_update(void);
     void update_weather();
+    void update_adc();
 
     // rtnasv devices
     AP_GPS::Weather_State weather_info;
+
+    // analog to digital converter
+    AP_ADC_ADS1115 adc;
+    struct adc_report_s adc_read_data[4];
     
     // Steering.cpp
     void set_servos(void);

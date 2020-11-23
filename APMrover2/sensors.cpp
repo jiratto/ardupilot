@@ -151,3 +151,13 @@ void Rover::update_weather()
     weather_info = gps.get_weather_state();
     gcs().send_message(MSG_WEATHER_INFO);
 }
+
+void Rover::update_adc()
+{
+    // Get reading from guage adc
+    size_t read_length = 4;
+    adc.read(adc_read_data, read_length);
+
+    gcs().send_text(MAV_SEVERITY_INFO, "%d %f | %d %f | %d %f | %d %f ", 
+        adc_read_data[0].id, adc_read_data[0].data, adc_read_data[1].id, adc_read_data[1].data, adc_read_data[2].id, adc_read_data[2].data, adc_read_data[3].id, adc_read_data[3].data);
+}
