@@ -93,14 +93,12 @@
 
 extern const AP_HAL::HAL &hal;
 
-#define ADS1115_CHANNELS_COUNT           6
+#define ADS1115_CHANNELS_COUNT  4
 
 const uint8_t AP_ADC_ADS1115::_channels_number  = ADS1115_CHANNELS_COUNT;
 
 /* Only two differential channels used */
 static const uint16_t mux_table[ADS1115_CHANNELS_COUNT] = {
-    ADS1115_MUX_P1_N3,
-    ADS1115_MUX_P2_N3,
     ADS1115_MUX_P0_NG,
     ADS1115_MUX_P1_NG,
     ADS1115_MUX_P2_NG,
@@ -108,8 +106,9 @@ static const uint16_t mux_table[ADS1115_CHANNELS_COUNT] = {
 };
 
 
-AP_ADC_ADS1115::AP_ADC_ADS1115()
+AP_ADC_ADS1115::AP_ADC_ADS1115(uint8_t address)
     : _dev{}
+    , _address(address)
     , _gain(ADS1115_PGA_4P096)
     , _channel_to_read(0)
 {
@@ -123,7 +122,7 @@ AP_ADC_ADS1115::~AP_ADC_ADS1115()
 
 bool AP_ADC_ADS1115::init()
 {
-    _dev = hal.i2c_mgr->get_device(ADS1115_I2C_BUS, ADS1115_I2C_ADDR);
+    _dev = hal.i2c_mgr->get_device(ADS1115_I2C_BUS, _address);
     if (!_dev) {
         return false;
     }

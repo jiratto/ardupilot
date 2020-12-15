@@ -154,10 +154,31 @@ void Rover::update_weather()
 
 void Rover::update_adc()
 {
-    // Get reading from guage adc
-    size_t read_length = 4;
-    adc.read(adc_read_data, read_length);
+    // address: 0x48
+    // P101: id0 
+    // P105: id1
+    // P107: id2
+    // P109: id3
+    
+    // address: 0x49
+    // P111: id0 
+    // P113: id1
+    // P115: id2
+    // P117: id3
 
-    gcs().send_text(MAV_SEVERITY_INFO, "%d %f | %d %f | %d %f | %d %f ", 
-        adc_read_data[0].id, adc_read_data[0].data, adc_read_data[1].id, adc_read_data[1].data, adc_read_data[2].id, adc_read_data[2].data, adc_read_data[3].id, adc_read_data[3].data);
+    adc_report_s adc_read_ch0_data[4];
+    adc_ch0.read(adc_read_ch0_data,4);
+
+    adc_report_s adc_read_ch1_data[4];
+    adc_ch1.read(adc_read_ch1_data,4);
+
+    gcs().send_text(MAV_SEVERITY_INFO, "%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f", 
+        adc_read_ch0_data[0].data, 
+        adc_read_ch0_data[1].data, 
+        adc_read_ch0_data[2].data, 
+        adc_read_ch0_data[3].data,
+        adc_read_ch1_data[0].data, 
+        adc_read_ch1_data[1].data, 
+        adc_read_ch1_data[2].data, 
+        adc_read_ch1_data[3].data);
 }

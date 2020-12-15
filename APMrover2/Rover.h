@@ -98,6 +98,10 @@
 #include "AP_Rally.h"
 #include "RC_Channel.h"                  // RC Channel Library
 
+// rtnasv i2c address
+#define RTNASV_I2C_ADC_CH0  0x48  
+#define RTNASV_I2C_ADC_CH1  0x49
+
 class Rover : public AP_Vehicle {
 public:
     friend class GCS_MAVLINK_Rover;
@@ -403,9 +407,9 @@ private:
     AP_GPS::Weather_State weather_info;
 
     // analog to digital converter
-    AP_ADC_ADS1115 adc;
-    struct adc_report_s adc_read_data[4];
-    
+    AP_ADC_ADS1115 adc_ch0{RTNASV_I2C_ADC_CH0};
+    AP_ADC_ADS1115 adc_ch1{RTNASV_I2C_ADC_CH1};
+       
     // Steering.cpp
     void set_servos(void);
 

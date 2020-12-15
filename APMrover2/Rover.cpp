@@ -153,7 +153,9 @@ void Rover::setup()
 
     init_ardupilot();
 
-    adc.init();
+    // initialise i2c adc
+    adc_ch0.init();
+    adc_ch1.init();
 
     // initialise the main loop scheduler
     scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks), MASK_LOG_PM);
