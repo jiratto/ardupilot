@@ -146,12 +146,18 @@ void Rover::rpm_update(void)
     }
 }
 
+/*
+  update Weather Station sensors
+ */
 void Rover::update_weather()
 {
     weather_info = gps.get_weather_state();
     gcs().send_message(MSG_WEATHER_INFO);
 }
 
+/*
+  update ADC sensors
+ */
 void Rover::update_adc()
 {
     // address: 0x48
@@ -172,13 +178,13 @@ void Rover::update_adc()
     adc_report_s adc_read_ch1_data[4];
     adc_ch1.read(adc_read_ch1_data,4);
 
-    gcs().send_text(MAV_SEVERITY_INFO, "%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f", 
-        adc_read_ch0_data[0].data, 
-        adc_read_ch0_data[1].data, 
-        adc_read_ch0_data[2].data, 
-        adc_read_ch0_data[3].data,
-        adc_read_ch1_data[0].data, 
-        adc_read_ch1_data[1].data, 
-        adc_read_ch1_data[2].data, 
-        adc_read_ch1_data[3].data);
+    // gcs().send_text(MAV_SEVERITY_INFO, "%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f", 
+    //     adc_read_ch0_data[0].data, 
+    //     adc_read_ch0_data[1].data, 
+    //     adc_read_ch0_data[2].data, 
+    //     adc_read_ch0_data[3].data,
+    //     adc_read_ch1_data[0].data, 
+    //     adc_read_ch1_data[1].data, 
+    //     adc_read_ch1_data[2].data, 
+    //     adc_read_ch1_data[3].data);
 }

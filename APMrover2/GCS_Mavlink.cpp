@@ -709,6 +709,18 @@ MAV_RESULT GCS_MAVLINK_Rover::handle_command_long_packet(const mavlink_command_l
                                               static_cast<uint8_t>(packet.param2),
                                               static_cast<int16_t>(packet.param3),
                                               packet.param4);
+    
+    case MAV_CMD_USER_1:
+    {
+        AP_Relay *_apm_relay = AP::relay();
+        if (_apm_relay != nullptr) {
+            _apm_relay->toggle(static_cast<int>(packet.param1));
+        }
+        // relay.
+        // static_cast<int>()
+        //     gcs().send_text(MAV_SEVERITY_INFO, "MAV_CMD_USER_1 %f", packet.param1);
+        return MAV_RESULT_ACCEPTED;
+    }
 
     default:
         return GCS_MAVLINK::handle_command_long_packet(packet);

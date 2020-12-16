@@ -270,6 +270,7 @@ void Rover::update_logging2(void)
     }
 }
 
+//static bool toggle = false;
 
 /*
   once a second events
@@ -304,6 +305,31 @@ void Rover::one_second_loop(void)
 
     // send latest param values to wp_nav
     g2.wp_nav.set_turn_params(g.turn_max_g, g2.turn_radius, g2.motors.have_skid_steering());
+
+    // // test relay
+    // AP_Relay *_apm_relay = AP::relay();
+    // if (_apm_relay == nullptr) {
+    //     return;
+    // }
+    // if (toggle) {
+    //     toggle = false;
+    //     relay.off(0);
+    //     relay.off(1);
+    //     relay.off(2);
+    //     relay.off(3);
+    //     relay.off(4);
+    //     relay.off(5);
+    //     gcs().send_text(MAV_SEVERITY_INFO, "relay off");
+    // } else {
+    //     toggle = true;
+    //     relay.on(0);
+    //     relay.on(1);
+    //     relay.on(2);
+    //     relay.on(3);
+    //     relay.on(4);
+    //     relay.on(5);
+    //     gcs().send_text(MAV_SEVERITY_INFO, "relay on");
+    // }
 }
 
 void Rover::update_GPS(void)

@@ -129,6 +129,12 @@ void Rover::init_ardupilot()
     g2.wheel_encoder.init();
 
     relay.init();
+    relay.enabled(0);
+    relay.enabled(1);
+    relay.enabled(2);
+    relay.enabled(3);
+    relay.enabled(4);
+    relay.enabled(5);
 
 #if MOUNT == ENABLED
     // initialise camera mount
