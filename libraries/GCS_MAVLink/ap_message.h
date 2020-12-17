@@ -76,5 +76,7 @@ enum ap_message : uint8_t {
     MSG_WEATHER_INFO,
     MSG_AIS_VESSEL,
     MSG_WATER_SPEED,
+    MSG_RTNASV_ADC,
+    MSG_RTNASV_GPIO,
     MSG_LAST // MSG_LAST must be the last entry in this enum
 };

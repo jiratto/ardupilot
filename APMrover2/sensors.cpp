@@ -160,31 +160,14 @@ void Rover::update_weather()
  */
 void Rover::update_adc()
 {
-    // address: 0x48
-    // P101: id0 
-    // P105: id1
-    // P107: id2
-    // P109: id3
-    
-    // address: 0x49
-    // P111: id0 
-    // P113: id1
-    // P115: id2
-    // P117: id3
+    adc_ch0.read(adc0_val, 4);
+    adc_ch1.read(adc1_val, 4);
+}
 
-    adc_report_s adc_read_ch0_data[4];
-    adc_ch0.read(adc_read_ch0_data,4);
-
-    adc_report_s adc_read_ch1_data[4];
-    adc_ch1.read(adc_read_ch1_data,4);
-
-    // gcs().send_text(MAV_SEVERITY_INFO, "%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f", 
-    //     adc_read_ch0_data[0].data, 
-    //     adc_read_ch0_data[1].data, 
-    //     adc_read_ch0_data[2].data, 
-    //     adc_read_ch0_data[3].data,
-    //     adc_read_ch1_data[0].data, 
-    //     adc_read_ch1_data[1].data, 
-    //     adc_read_ch1_data[2].data, 
-    //     adc_read_ch1_data[3].data);
+/*
+  update GPIO 
+ */
+void Rover::update_gpio()
+{
+    g2.gpio.read(0, gpio0_val);
 }

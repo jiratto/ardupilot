@@ -70,8 +70,9 @@
 #include <AP_OSD/AP_OSD.h>
 #include <AP_WindVane/AP_WindVane.h>
 #include <AP_AIS/AP_AIS.h>
-#include <AP_RTNASV/AP_WaterSpeed.h>
 #include <AP_ADC/AP_ADC_ADS1115.h>
+#include <AP_RTNASV/AP_WaterSpeed.h>
+#include <AP_RTNASV/TCA9534A_I2C.h>
 
 #ifdef ENABLE_SCRIPTING
 #include <AP_Scripting/AP_Scripting.h>
@@ -360,6 +361,8 @@ private:
     void send_servo_out(mavlink_channel_t chan);
     void send_wheel_encoder_distance(mavlink_channel_t chan);
     void send_weather_info(mavlink_channel_t chan);
+    void send_rtnasv_adc(mavlink_channel_t chan);
+    void send_rtnasv_gpio(mavlink_channel_t chan);
 
     // Log.cpp
     void Log_Write_Attitude();
@@ -402,6 +405,7 @@ private:
     void rpm_update(void);
     void update_weather();
     void update_adc();
+    void update_gpio();
 
     // rtnasv devices
     AP_GPS::Weather_State weather_info;
@@ -409,7 +413,13 @@ private:
     // analog to digital converter
     AP_ADC_ADS1115 adc_ch0{RTNASV_I2C_ADC_CH0};
     AP_ADC_ADS1115 adc_ch1{RTNASV_I2C_ADC_CH1};
-       
+
+    // gpio buffering
+    uint8_t gpio0_val = 0;
+    uint8_t gpio1_val = 0;
+    adc_report_s adc0_val[4];
+    adc_report_s adc1_val[4];
+
     // Steering.cpp
     void set_servos(void);
 

@@ -402,6 +402,7 @@ public:
     // rtnasv devices
     AP_AIS ais;
     AP_WaterSpeed waterspeed;
+    TCA9534A_I2C gpio;
 };
 
 extern const AP_Param::Info var_info[];

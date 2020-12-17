@@ -55,7 +55,8 @@ const AP_Scheduler::Task Rover::scheduler_tasks[] = {
     SCHED_TASK(set_servos,            400,    200),
     SCHED_TASK(update_GPS,             50,    300),
     SCHED_TASK(update_weather,          1,   1000),
-    SCHED_TASK(update_adc,              4,   1000), 
+    SCHED_TASK(update_adc,              1,   1000),
+    SCHED_TASK(update_gpio,            10,   1000),
     SCHED_TASK_CLASS(AP_Baro,             &rover.barometer,        update,         10,  200),
     SCHED_TASK_CLASS(AP_Beacon,           &rover.g2.beacon,        update,         50,  200),
     SCHED_TASK_CLASS(AP_Proximity,        &rover.g2.proximity,     update,         50,  200),
@@ -305,31 +306,6 @@ void Rover::one_second_loop(void)
 
     // send latest param values to wp_nav
     g2.wp_nav.set_turn_params(g.turn_max_g, g2.turn_radius, g2.motors.have_skid_steering());
-
-    // // test relay
-    // AP_Relay *_apm_relay = AP::relay();
-    // if (_apm_relay == nullptr) {
-    //     return;
-    // }
-    // if (toggle) {
-    //     toggle = false;
-    //     relay.off(0);
-    //     relay.off(1);
-    //     relay.off(2);
-    //     relay.off(3);
-    //     relay.off(4);
-    //     relay.off(5);
-    //     gcs().send_text(MAV_SEVERITY_INFO, "relay off");
-    // } else {
-    //     toggle = true;
-    //     relay.on(0);
-    //     relay.on(1);
-    //     relay.on(2);
-    //     relay.on(3);
-    //     relay.on(4);
-    //     relay.on(5);
-    //     gcs().send_text(MAV_SEVERITY_INFO, "relay on");
-    // }
 }
 
 void Rover::update_GPS(void)

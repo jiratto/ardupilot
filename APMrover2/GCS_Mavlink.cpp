@@ -295,7 +295,6 @@ void Rover::send_wheel_encoder_distance(const mavlink_channel_t chan)
 
 void Rover::send_weather_info(const mavlink_channel_t chan)
 {
-//    gcs().send_text(MAV_SEVERITY_INFO, "wind_angle : %0.2f", weather_info.wind_angle);
     mavlink_msg_weather_info_send(chan,
                                   weather_info.wind_angle_true,
                                   weather_info.wind_angle_relative, 
@@ -309,6 +308,24 @@ void Rover::send_weather_info(const mavlink_channel_t chan)
                                   weather_info.water_speed, 
                                   weather_info.miles_total,
                                   weather_info.miles_since_reset);                                  
+}
+
+void Rover::send_rtnasv_adc(mavlink_channel_t chan)
+{
+    mavlink_msg_rtnasv_adc_send(chan,
+                                static_cast<uint16_t>(adc0_val[0].data),
+                                static_cast<uint16_t>(adc0_val[1].data),
+                                static_cast<uint16_t>(adc0_val[2].data),
+                                static_cast<uint16_t>(adc0_val[3].data),
+                                static_cast<uint16_t>(adc1_val[0].data),
+                                static_cast<uint16_t>(adc1_val[1].data),
+                                static_cast<uint16_t>(adc1_val[2].data),
+                                static_cast<uint16_t>(adc1_val[3].data));
+}
+
+void Rover::send_rtnasv_gpio(mavlink_channel_t chan)
+{
+    mavlink_msg_rtnasv_gpio_send(chan, gpio0_val, gpio1_val);
 }
 
 uint8_t GCS_MAVLINK_Rover::sysid_my_gcs() const
@@ -350,11 +367,6 @@ bool GCS_MAVLINK_Rover::try_send_message(enum ap_message id)
         rover.g2.windvane.send_wind(chan);
         break;
 
-    case MSG_WEATHER_INFO:
-        CHECK_PAYLOAD_SIZE(WEATHER_INFO);
-        rover.send_weather_info(chan);
-        break;
-
     case MSG_ADSB_VEHICLE: {
         AP_OADatabase *oadb = AP::oadatabase();
         if (oadb != nullptr) {
@@ -366,13 +378,30 @@ bool GCS_MAVLINK_Rover::try_send_message(enum ap_message id)
         }
         break;
     }
+    
+    case MSG_WEATHER_INFO:
+        CHECK_PAYLOAD_SIZE(WEATHER_INFO);
+        rover.send_weather_info(chan);
+        break;
 
     case MSG_AIS_VESSEL:
+        CHECK_PAYLOAD_SIZE(AIS_VESSEL);
         rover.g2.ais.send(chan);
         break;
 
     case MSG_WATER_SPEED:
+        CHECK_PAYLOAD_SIZE(WATER_SPEED);
         rover.g2.waterspeed.send(chan);
+        break;
+
+    case MSG_RTNASV_ADC:
+        CHECK_PAYLOAD_SIZE(RTNASV_ADC);
+        rover.send_rtnasv_adc(chan);
+        break;
+
+    case MSG_RTNASV_GPIO:
+        CHECK_PAYLOAD_SIZE(RTNASV_GPIO);
+        rover.send_rtnasv_gpio(chan);
         break;
 
     default:
@@ -506,6 +535,7 @@ static const ap_message STREAM_EXTENDED_STATUS_msgs[] = {
     MSG_NAV_CONTROLLER_OUTPUT,
     MSG_FENCE_STATUS,
     MSG_POSITION_TARGET_GLOBAL_INT,
+    MSG_RTNASV_ADC,
 };
 static const ap_message STREAM_POSITION_msgs[] = {
     MSG_LOCATION,
@@ -554,6 +584,7 @@ static const ap_message STREAM_PARAMS_msgs[] = {
 static const ap_message STREAM_ADSB_msgs[] = {
     MSG_ADSB_VEHICLE,
     MSG_AIS_VESSEL,
+    MSG_RTNASV_GPIO,
 };
 
 const struct GCS_MAVLINK::stream_entries GCS_MAVLINK::all_stream_entries[] = {
@@ -710,15 +741,13 @@ MAV_RESULT GCS_MAVLINK_Rover::handle_command_long_packet(const mavlink_command_l
                                               static_cast<int16_t>(packet.param3),
                                               packet.param4);
     
+    // rtnasv use for toggle relay
     case MAV_CMD_USER_1:
     {
         AP_Relay *_apm_relay = AP::relay();
         if (_apm_relay != nullptr) {
             _apm_relay->toggle(static_cast<int>(packet.param1));
         }
-        // relay.
-        // static_cast<int>()
-        //     gcs().send_text(MAV_SEVERITY_INFO, "MAV_CMD_USER_1 %f", packet.param1);
         return MAV_RESULT_ACCEPTED;
     }
 
