@@ -15,9 +15,9 @@ extern const AP_HAL::HAL& hal;
 #define ALL_LOW             0x00
 #define DEFAULT_CONFIG      0xFF
 
-bool TCA9534A_I2C::init()
+bool TCA9534A_I2C::init(uint8_t addr, uint8_t config)
 {
-    _dev = std::move(hal.i2c_mgr->get_device(TCA9534A_I2C_BUS, TCA9534A_I2C_ADDR));
+    _dev = std::move(hal.i2c_mgr->get_device(TCA9534A_I2C_BUS, addr));
 
     // take i2c bus sempahore
     if (!_dev || !_dev->get_semaphore()->take(HAL_SEMAPHORE_BLOCK_FOREVER)) {
@@ -25,7 +25,7 @@ bool TCA9534A_I2C::init()
     }
 
     // Configure the role of each IO
-    bool ret = _dev->write_register(CONFIG_BYTE, DEFAULT_CONFIG);
+    bool ret = _dev->write_register(CONFIG_BYTE, config);
 
     // Configure polarity inversion
     ret &= _dev->write_register(POL_INVERT_BYTE, ALL_LOW);

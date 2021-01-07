@@ -93,7 +93,8 @@ void Rover::init_ardupilot()
     // rtnasv
     g2.ais.init();
     g2.waterspeed.init();
-    g2.gpio.init();
+    g2.gpio0_init = g2.gpio0.init(0x20, 0xFF);
+    g2.gpio1_init = g2.gpio1.init(0x21, 0x0F);
     
     // initialise compass
     AP::compass().set_log_bit(MASK_LOG_COMPASS);
@@ -217,6 +218,18 @@ void Rover::startup_ground(void)
     // we don't want writes to the serial port to cause us to pause
     // so set serial ports non-blocking once we are ready to drive
     serial_manager.set_blocking_writes_all(false);
+
+    // check gpio
+    if (g2.gpio0_init) {
+        gcs().send_text(MAV_SEVERITY_INFO, "GPIO0 : Initialise Success");
+    } else {
+        gcs().send_text(MAV_SEVERITY_ERROR, "GPIO0 : Initialise Failed");
+    }
+    if (g2.gpio1_init) {
+        gcs().send_text(MAV_SEVERITY_INFO, "GPIO1 : Initialise Success");
+    } else {
+        gcs().send_text(MAV_SEVERITY_ERROR, "GPIO1 : Initialise Failed");
+    }
 
     gcs().send_text(MAV_SEVERITY_INFO, "Ready to drive");
 }

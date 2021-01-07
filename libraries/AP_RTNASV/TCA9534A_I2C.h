@@ -7,7 +7,7 @@ class TCA9534A_I2C
 public:
 
     // initialise the driver
-    bool init(void);
+    bool init(uint8_t addr, uint8_t config);
 
     void update(void);
 

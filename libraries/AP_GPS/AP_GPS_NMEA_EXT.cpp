@@ -204,12 +204,12 @@ uint32_t AP_GPS_NMEA_EXT::_parse_degrees()
 bool AP_GPS_NMEA_EXT::_have_new_message()
 {
     uint32_t now = AP_HAL::millis();
-    if (now - _last_MWV_ms < 1000 ||
+    if (now - _last_HDG_ms < 1000 ||
+        now - _last_ZDA_ms < 1000 ||
+        now - _last_MWD_ms < 1000 ||
         now - _last_MDA_ms < 1000 ||
-        now - _last_DPT_ms < 1000 ||
-        now - _last_MTW_ms < 1000 ||
-        now - _last_VHW_ms < 1000 ||
-        now - _last_VLW_ms < 1000) {
+        now - _last_MWV_ms < 1000 ||
+        now - _last_VHW_ms < 1000) {
         return true;
     }
 
@@ -328,43 +328,43 @@ bool AP_GPS_NMEA_EXT::_term_complete()
 
             uint32_t now = AP_HAL::millis();
             switch (_sentence_type) {
-            case _WIN_SENTENCE_MWV:
+            case _GPS_SENTENCE_HDG:
+                _last_HDG_ms = now;
+                break;
+            case _GPS_SENTENCE_ZDA:
+                _last_ZDA_ms = now;
+                break;
+            case _GPS_SENTENCE_MWD:
+                _last_MWD_ms = now;
+                break;
+            case _GPS_SENTENCE_MDA:
+                _last_MDA_ms = now;
+                weather.air_temperature = _new_air_temperature * 0.01f;
+                break;
+            case _GPS_SENTENCE_MWV:
                 _last_MWV_ms = now;
                 if (_new_wind_reference == 'R') {
                     weather.wind_angle_relative = wrap_360(_new_wind_angle * 0.01f);
                     if (_new_wind_speed_units == 'K') {
-                        weather.wind_speed_relative = (_new_wind_speed * 278) / 100000;
+                        weather.wind_speed_relative = (_new_wind_speed * 54) / 10000;
                     } else if (_new_wind_speed_units == 'M') { 
-                        weather.wind_speed_relative = _new_wind_speed * 0.01f;
+                        weather.wind_speed_relative = (_new_wind_speed * 194) / 10000;
                     } else if (_new_wind_speed_units == 'N') {
-                        weather.wind_speed_relative = (_new_wind_speed * 514) / 100000;
+                        weather.wind_speed_relative = _new_wind_speed * 0.01f;
                     }
                 } else if (_new_wind_reference == 'T') {
                     weather.wind_angle_true = wrap_360(_new_wind_angle * 0.01f);
                     if (_new_wind_speed_units == 'K') {
-                        weather.wind_speed_true = (_new_wind_speed * 278) / 100000;
+                        weather.wind_speed_true = (_new_wind_speed * 54) / 10000;
                     } else if (_new_wind_speed_units == 'M') {
-                        weather.wind_speed_true = _new_wind_speed * 0.01f;
+                        weather.wind_speed_true = (_new_wind_speed * 194) / 10000;
                     } else if (_new_wind_speed_units == 'N') {
-                        weather.wind_speed_true = (_new_wind_speed * 514) / 100000;
+                        weather.wind_speed_true = _new_wind_speed * 0.01f;
                     }
                 }
                 break;
-            case _WIN_SENTENCE_MDA:
-                _last_MDA_ms = now;
-                break;
-            case _SON_SENTENCE_DPT:
-                _last_DPT_ms = now;
-                break;
-            case _SON_SENTENCE_MTW:
-                _last_MTW_ms = now;
-                break;
-            case _SON_SENTENCE_VHW:
-                _last_VHW_ms = now;
-                break;
-            case _SON_SENTENCE_VLW:
-                _last_VLW_ms = now;
-                break;                
+            case _GPS_SENTENCE_VHW:
+                break;               
             }
             // see if we got a good message
             return _have_new_message();
@@ -399,18 +399,18 @@ bool AP_GPS_NMEA_EXT::_term_complete()
             // VTG may not contain a data qualifier, presume the solution is good
             // unless it tells us otherwise.
             _gps_data_good = true;
+        } else if (strcmp(term_type, "HDG") == 0) {
+            _sentence_type = _GPS_SENTENCE_HDG;
+        } else if (strcmp(term_type, "ZDA") == 0) {
+            _sentence_type = _GPS_SENTENCE_ZDA;
+        } else if (strcmp(term_type, "MWD") == 0) {
+            _sentence_type = _GPS_SENTENCE_MWD;
         } else if (strcmp(term_type, "MDA") == 0) {
-            _sentence_type = _WIN_SENTENCE_MDA;
+            _sentence_type = _GPS_SENTENCE_MDA;
         } else if (strcmp(term_type, "MWV") == 0) {
-            _sentence_type = _WIN_SENTENCE_MWV;
-        } else if (strcmp(term_type, "DPT") == 0) {
-            _sentence_type = _SON_SENTENCE_DPT;
-        } else if (strcmp(term_type, "MTW") == 0) {
-            _sentence_type = _SON_SENTENCE_MTW;
+            _sentence_type = _GPS_SENTENCE_MWV;
         } else if (strcmp(term_type, "VHW") == 0) {
-            _sentence_type = _SON_SENTENCE_VHW;
-        } else if (strcmp(term_type, "VLW") == 0) {
-            _sentence_type = _SON_SENTENCE_VLW;
+            _sentence_type = _GPS_SENTENCE_VHW;
         } else {
             _sentence_type = _GPS_SENTENCE_OTHER;
         }
@@ -480,6 +480,7 @@ bool AP_GPS_NMEA_EXT::_term_complete()
             _new_speed = (_parse_decimal_100(_term) * 514) / 1000;       // knots-> m/sec, approximiates * 0.514
             break;
         case _GPS_SENTENCE_HDT + 1: // Course (HDT)
+        case _GPS_SENTENCE_HDG + 1: // Course (HDG)
             _new_gps_yaw = _parse_decimal_100(_term);
             break;
         case _GPS_SENTENCE_RMC + 8: // Course (GPRMC)
@@ -489,21 +490,23 @@ bool AP_GPS_NMEA_EXT::_term_complete()
 
         // MWV- Wind Speed and Angle
         // 
-        case _WIN_SENTENCE_MWV + 1:
+        case _GPS_SENTENCE_MWV + 1:
             _new_wind_angle = _parse_decimal_100(_term);
             break;
-        case _WIN_SENTENCE_MWV + 2:
+        case _GPS_SENTENCE_MWV + 2:
             _new_wind_reference = _term[0];
             break;
-        case _WIN_SENTENCE_MWV + 3:
+        case _GPS_SENTENCE_MWV + 3:
             _new_wind_speed = _parse_decimal_100(_term);
             break;
-        case _WIN_SENTENCE_MWV + 4:
+        case _GPS_SENTENCE_MWV + 4:
             _new_wind_speed_units = _term[0];
             break;
-        case _WIN_SENTENCE_MWV + 5:
+        case _GPS_SENTENCE_MWV + 5:
             _new_wind_status = _term[0];
             break;
+        case _GPS_SENTENCE_MDA + 5:
+            _new_air_temperature = _parse_decimal_100(_term);
         }
     }
 

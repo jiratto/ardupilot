@@ -72,16 +72,17 @@ public:
 private:
     /// Coding for the GPS sentences that the parser handles
     enum _sentence_types {      //there are some more than 10 fields in some sentences , thus we have to increase these value.
-        _GPS_SENTENCE_RMC = 32,
-        _GPS_SENTENCE_GGA = 64,
-        _GPS_SENTENCE_VTG = 96,
-        _GPS_SENTENCE_HDT = 128,
-        _WIN_SENTENCE_MDA = 192,
-        _WIN_SENTENCE_MWV = 224,
-        _SON_SENTENCE_DPT = 256,
-        _SON_SENTENCE_MTW = 288,
-        _SON_SENTENCE_VHW = 320,
-        _SON_SENTENCE_VLW = 352,
+        _GPS_SENTENCE_RMC = 32,     // [13] $GPRMC,044911,A,1333.4681,N,10034.9158,E,0.0,293.4,040121,0.7,W,D*02
+        _GPS_SENTENCE_GGA = 64,     // [15] $GPGGA,044910,1333.4682,N,10034.9157,E,2,12,1.0,-1.0,M,-26.4,M,,*4C
+        _GPS_SENTENCE_VTG = 96,     // [10] $GPVTG,237.8,T,,,0.0,N,0.0,K,A*4E
+        _GPS_SENTENCE_HDT = 128,    // [3]  **$GPHDT,123.456,T*00
+        /// extension
+        _GPS_SENTENCE_HDG = 138,    // [6]  $GPHDG,165.4,0.0,E,0.7,W*4D
+        _GPS_SENTENCE_ZDA = 148,    // [7]  $GPZDA,044910,04,01,2021,,*44
+        _GPS_SENTENCE_MWD = 158,    // [9]  $GPMWD,311.6,T,,,3.4,N,1.7,M*34
+        _GPS_SENTENCE_MDA = 178,    // [21] $GPMDA,,,,,29.7,C,,,,,,,,,,,,,,*0E
+        _GPS_SENTENCE_MWV = 208,    // [6]  $GPMWV,145.9,R,3.4,N,A*24
+        _GPS_SENTENCE_VHW = 218,    // [9]  $GPVHW,,,165.4,M,,,,*3B
         _GPS_SENTENCE_OTHER = 0
     };
 
@@ -152,15 +153,16 @@ private:
     uint32_t _last_GGA_ms = 0;
     uint32_t _last_VTG_ms = 0;
     uint32_t _last_HDT_ms = 0;  
-
-    // weather state
-    AP_GPS::Weather_State &weather;
-    uint32_t _last_MWV_ms = 0;
+    // rtnasv
+    uint32_t _last_HDG_ms = 0;
+    uint32_t _last_ZDA_ms = 0;
+    uint32_t _last_MWD_ms = 0;
     uint32_t _last_MDA_ms = 0;
-    uint32_t _last_DPT_ms = 0;
-    uint32_t _last_MTW_ms = 0;
-    uint32_t _last_VHW_ms = 0;
-    uint32_t _last_VLW_ms = 0;
+    uint32_t _last_MWV_ms = 0;
+    uint32_t _last_VHW_ms = 0;   
+
+    // weather station
+    AP_GPS::Weather_State &weather;
     float _new_wind_angle;
     char _new_wind_reference;
     float _new_wind_speed;
