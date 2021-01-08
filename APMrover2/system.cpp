@@ -221,14 +221,14 @@ void Rover::startup_ground(void)
 
     // check gpio
     if (g2.gpio0_init) {
-        gcs().send_text(MAV_SEVERITY_INFO, "GPIO0 : Initialise Success");
+        gcs().send_text(MAV_SEVERITY_INFO, "GPIO0: Initialise Success");
     } else {
-        gcs().send_text(MAV_SEVERITY_ERROR, "GPIO0 : Initialise Failed");
+        gcs().send_text(MAV_SEVERITY_ERROR, "GPIO0: Initialise Failed");
     }
     if (g2.gpio1_init) {
         gcs().send_text(MAV_SEVERITY_INFO, "GPIO1 : Initialise Success");
     } else {
-        gcs().send_text(MAV_SEVERITY_ERROR, "GPIO1 : Initialise Failed");
+        gcs().send_text(MAV_SEVERITY_ERROR, "GPIO1: Initialise Failed");
     }
 
     gcs().send_text(MAV_SEVERITY_INFO, "Ready to drive");

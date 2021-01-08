@@ -167,17 +167,19 @@ void Rover::update_adc()
 /*
   update GPIO 
  */
-void Rover::update_gpio()
+void Rover::update_gpio0()
 {
     g2.gpio0.read(0, gpio0_val);
+}
 
-    // uint16_t val = hal.rcin->read(15);
-    // if (val > 1750) {
-    //     g2.gpio1.write(1, 0xEF); //1110|1111
-    // } else if (val < 1250) {
-    //     g2.gpio1.write(1, 0xDF); //1101|1111
-    // } else {
-    //     g2.gpio1.write(1, 0xFF);
-    // }
-    g2.gpio1.write(1, 0x0F);
+void Rover::update_gpio1()
+{
+    uint16_t val = hal.rcin->read(15);
+    if (val > 1750) {
+        g2.gpio1.write(1, 0xEF); //1110|1111
+    } else if (val < 1250) {
+        g2.gpio1.write(1, 0xDF); //1101|1111
+    } else {
+        g2.gpio1.write(1, 0xFF);
+    }
 }

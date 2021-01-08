@@ -405,7 +405,8 @@ private:
     void rpm_update(void);
     void update_weather();
     void update_adc();
-    void update_gpio();
+    void update_gpio0();
+    void update_gpio1();
 
     // rtnasv devices
     AP_GPS::Weather_State weather_info;

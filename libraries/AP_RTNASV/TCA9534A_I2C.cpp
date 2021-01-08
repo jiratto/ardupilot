@@ -1,6 +1,7 @@
 #include "TCA9534A_I2C.h"
 #include <utility>
 #include <AP_HAL/AP_HAL.h>
+//#include <GCS_MAVLink/GCS.h>
 
 extern const AP_HAL::HAL& hal;
 
@@ -42,7 +43,7 @@ bool TCA9534A_I2C::read(int command, uint8_t &data)
 {
     bool ret;
 
-    if (!_dev || !_dev->get_semaphore()->take(1)) {
+    if (!_dev || !_dev->get_semaphore()->take(10)) {
         return false;
     }
 
@@ -74,11 +75,11 @@ bool TCA9534A_I2C::read(int command, uint8_t &data)
 bool TCA9534A_I2C::write(int command, uint8_t value)
 {
     bool ret;
-    
-    if (!_dev || !_dev->get_semaphore()->take(1)) {
+
+    if (!_dev || !_dev->get_semaphore()->take(50)) {
         return false;
     }
-
+    
     switch(command){
         case 1:
         {
