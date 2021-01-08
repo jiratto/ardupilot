@@ -174,12 +174,15 @@ void Rover::update_gpio0()
 
 void Rover::update_gpio1()
 {
-    uint16_t val = hal.rcin->read(15);
-    if (val > 1750) {
+    uint16_t val = hal.rcin->read(14);
+    if (val > 1800) {
         g2.gpio1.write(1, 0xEF); //1110|1111
-    } else if (val < 1250) {
+        gpio1_val = 0xEF;
+    } else if ((val > 950) && (val < 1250)) {
         g2.gpio1.write(1, 0xDF); //1101|1111
+        gpio1_val = 0xDF;
     } else {
         g2.gpio1.write(1, 0xFF);
+        gpio1_val = 0xFF;
     }
 }
