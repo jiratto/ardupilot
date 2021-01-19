@@ -90,12 +90,7 @@ void Rover::init_ardupilot()
 #if LOGGING_ENABLED == ENABLED
     log_init();
 #endif
-    // rtnasv
-    g2.ais.init();
-    g2.waterspeed.init();
-    g2.gpio0_init = g2.gpio0.init(0x20, 0xFF);
-    g2.gpio1_init = g2.gpio1.init(0x21, 0x0F);
-    
+
     // initialise compass
     AP::compass().set_log_bit(MASK_LOG_COMPASS);
     AP::compass().init();
@@ -130,6 +125,7 @@ void Rover::init_ardupilot()
     // init wheel encoders
     g2.wheel_encoder.init();
 
+    // rtnasv relays
     relay.init();
     relay.enabled(0);
     relay.enabled(1);
@@ -137,6 +133,12 @@ void Rover::init_ardupilot()
     relay.enabled(3);
     relay.enabled(4);
     relay.enabled(5);
+    
+    // rtnasv devices
+    g2.ais.init();
+    g2.waterspeed.init();
+    g2.gpio0_init = g2.gpio0.init(0x20, 0xFF);
+    g2.gpio1_init = g2.gpio1.init(0x21, 0x0F);
 
 #if MOUNT == ENABLED
     // initialise camera mount
