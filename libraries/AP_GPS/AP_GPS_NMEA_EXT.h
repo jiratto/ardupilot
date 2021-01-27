@@ -83,6 +83,7 @@ private:
         _GPS_SENTENCE_MDA = 178,    // [21] $GPMDA,,,,,29.7,C,,,,,,,,,,,,,,*0E
         _GPS_SENTENCE_MWV = 208,    // [6]  $GPMWV,145.9,R,3.4,N,A*24
         _GPS_SENTENCE_VHW = 218,    // [9]  $GPVHW,,,165.4,M,,,,*3B
+        _GPS_SENTENCE_DPT = 228,    // [3]  $SDDPT,3.6,0.0*52
         _GPS_SENTENCE_OTHER = 0
     };
 
@@ -171,6 +172,8 @@ private:
     float _new_barometric_pressure;
     float _new_air_temperature;
     float _new_relative_humidity;
+    float _new_water_speed;
+    float _new_water_depth;
 
     /// @name	Init strings
     ///			In ::init, an attempt is made to configure the GPS

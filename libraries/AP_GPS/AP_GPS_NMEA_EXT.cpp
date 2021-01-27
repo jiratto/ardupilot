@@ -364,7 +364,11 @@ bool AP_GPS_NMEA_EXT::_term_complete()
                 }
                 break;
             case _GPS_SENTENCE_VHW:
-                break;               
+                weather.water_speed = _new_water_speed / 10000;
+                break;
+            case _GPS_SENTENCE_DPT:
+                weather.water_depth = _new_water_depth * 0.01f;
+                break;      
             }
             // see if we got a good message
             return _have_new_message();
@@ -411,6 +415,8 @@ bool AP_GPS_NMEA_EXT::_term_complete()
             _sentence_type = _GPS_SENTENCE_MWV;
         } else if (strcmp(term_type, "VHW") == 0) {
             _sentence_type = _GPS_SENTENCE_VHW;
+        } else if (strcmp(term_type, "DPT") == 0) {
+            _sentence_type = _GPS_SENTENCE_DPT;
         } else {
             _sentence_type = _GPS_SENTENCE_OTHER;
         }
@@ -507,6 +513,19 @@ bool AP_GPS_NMEA_EXT::_term_complete()
             break;
         case _GPS_SENTENCE_MDA + 5:
             _new_air_temperature = _parse_decimal_100(_term);
+            break;
+
+        // VHW- Water Speed and Heading
+        // $GPVHW,246,T,234,M,012.3,N,022.8,K*4F
+        case _GPS_SENTENCE_VHW + 5:
+            _new_water_speed = _parse_decimal_100(_term);
+            break;
+
+        // DPT- Depth
+        // $SDDPT,3.6,0.0*52
+        case _GPS_SENTENCE_DPT + 1:
+            _new_water_depth = _parse_decimal_100(_term);
+            break;
         }
     }
 
