@@ -364,7 +364,7 @@ bool AP_GPS_NMEA_EXT::_term_complete()
                 }
                 break;
             case _GPS_SENTENCE_VHW:
-                weather.water_speed = _new_water_speed / 10000;
+                weather.water_speed = _new_water_speed * 0.01f;
                 break;
             case _GPS_SENTENCE_DPT:
                 weather.water_depth = _new_water_depth * 0.01f;
